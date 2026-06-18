@@ -22,7 +22,7 @@ export default function GroupsAndUsersPanel({
     const unknown = enableyTree?.unknownGroupMemberships ?? [];
 
     return (
-        <div className="rounded-2xl border border-slate-200/80 bg-[#F2F2E9] p-5 shadow-sm sm:p-8">
+        <div className="rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm sm:p-8">
             {enableyError ? (
                 <pre className="mb-4 overflow-x-auto rounded-lg border border-red-200 bg-red-50 p-3 text-xs text-red-800">{enableyError}</pre>
             ) : null}

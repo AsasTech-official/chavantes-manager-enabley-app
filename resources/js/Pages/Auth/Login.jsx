@@ -59,7 +59,7 @@ export default function Login() {
             <Head title="login" />
             <div className="relative flex min-h-screen flex-col overflow-hidden bg-[#04385D] text-slate-800">
                 <div
-                    className="pointer-events-none fixed inset-0 z-0 bg-gradient-to-b from-[#20A39E]/40 via-[#205E8A]/15 to-[#04385D]"
+                    className="pointer-events-none fixed inset-0 z-0 bg-[#1F3860]"
                     aria-hidden
                 />
                 <div className="relative z-10 mx-auto flex w-full max-w-md flex-1 flex-col justify-center overflow-visible px-6 py-12">
@@ -67,11 +67,11 @@ export default function Login() {
                         <LoginFullScreenSpinner />
                     ) : (
                         <AnimatedContent {...DIALOG_MOTION} className="w-full">
-                            <div className="rounded-2xl border border-slate-200/80 bg-[#F2F2E9] p-8 shadow-sm">
+                            <div className="rounded-2xl border border-slate-200/80 bg-white p-8 shadow-sm">
                                 <div className="mb-8 flex justify-center">
                                     <img
-                                        src="/logo/ProJunto---logos.png"
-                                        alt="ProJunto"
+                                        src="/logo/chavantes-blue.png"
+                                        alt="Grupo Chavantes"
                                         className="h-14 w-auto max-w-[min(100%,16rem)] object-contain sm:h-16"
                                     />
                                 </div>
@@ -86,7 +86,7 @@ export default function Login() {
                                                 type="text"
                                                 value={username}
                                                 onChange={(e) => setUsername(e.target.value)}
-                                                className="mt-1.5 w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-slate-900 shadow-sm placeholder:text-slate-400 focus:border-cyan-500 focus:outline-none focus:ring-1 focus:ring-cyan-500"
+                                                className="mt-1.5 w-full rounded-lg border border-slate-400 bg-white px-3 py-2 text-slate-900 shadow-sm placeholder:text-slate-400 focus:border-[#3757A1] focus:outline-none focus:ring-1 focus:ring-[#3757A1]"
                                                 autoComplete="username"
                                             />
                                             {firstError('username') && (
@@ -104,7 +104,7 @@ export default function Login() {
                                                     type={showPassword ? 'text' : 'password'}
                                                     value={password}
                                                     onChange={(e) => setPassword(e.target.value)}
-                                                    className="w-full rounded-lg border border-slate-300 bg-white py-2 pl-3 pr-11 text-slate-900 shadow-sm focus:border-cyan-500 focus:outline-none focus:ring-1 focus:ring-cyan-500"
+                                                    className="w-full rounded-lg border border-slate-400 bg-white py-2 pl-3 pr-11 text-slate-900 shadow-sm focus:border-[#3757A1] focus:outline-none focus:ring-1 focus:ring-[#3757A1]"
                                                     autoComplete="current-password"
                                                 />
                                                 <button
@@ -128,7 +128,7 @@ export default function Login() {
                                         <button
                                             type="submit"
                                             disabled={processing}
-                                            className="cursor-pointer hover:scale-105 transition-all duration-300 w-full rounded-lg bg-[#20A39E] px-4 py-2.5 text-sm font-semibold text-white shadow hover:bg-[#FFBA49] focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:ring-offset-2 focus:ring-offset-white disabled:cursor-not-allowed disabled:opacity-50"
+                                            className="cursor-pointer hover:scale-105 transition-all duration-300 w-full rounded-lg bg-[#1F3860] px-4 py-2.5 text-sm font-semibold text-white shadow hover:bg-[#3757A1] focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:ring-offset-2 focus:ring-offset-white disabled:cursor-not-allowed disabled:opacity-50"
                                         >
                                             Acessar
                                         </button>

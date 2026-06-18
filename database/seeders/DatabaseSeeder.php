@@ -18,9 +18,9 @@ class DatabaseSeeder extends Seeder
     public function run(): void
     {
         User::query()->updateOrCreate(
-            ['username' => 'projunto'],
+            ['username' => 'chavantes'],
             [
-                'name' => 'PROJUNTO',
+                'name' => 'Grupo Chavantes',
                 'password' => Hash::make('password'),
             ]
         );

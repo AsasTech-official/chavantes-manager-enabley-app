@@ -157,7 +157,7 @@ export default function AppNav() {
 
     return (
         <>
-            <header className="sticky top-0 z-40 border-b border-slate-200/80 bg-[#F2F2E9] shadow-sm">
+            <header className="sticky top-0 z-40 border-b border-slate-200/80 bg-white shadow-sm">
                 <div className="relative flex h-[4.5rem] w-full items-center px-3 sm:px-5">
                     <Link
                         href="/home"
@@ -165,9 +165,9 @@ export default function AppNav() {
                         onClick={closeMenu}
                     >
                         <img
-                            src="/logo/ProJunto---logos.png"
-                            alt="ProJunto"
-                            className="h-10 w-auto max-w-[11rem] object-contain sm:h-11"
+                            src="/logo/chavantes-blue.png"
+                            alt="Grupo Chavantes"
+                            className="h-10 w-auto object-contain sm:h-11"
                         />
                     </Link>
                     <div className="pointer-events-none absolute inset-0 hidden items-center justify-center md:flex">

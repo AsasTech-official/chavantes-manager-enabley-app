@@ -7,7 +7,9 @@
 
         <title inertia>{{ config('app.name', 'Laravel') }}</title>
 
-        <link rel="icon" href="{{ asset('fav.png') }}" type="image/png">
+        <link rel="icon" href="{{ asset('favicon.ico') }}" sizes="any">
+        <link rel="icon" href="{{ asset('favicon-32.png') }}" type="image/png" sizes="32x32">
+        <link rel="apple-touch-icon" href="{{ asset('fav.png') }}">
 
         @viteReactRefresh
         @vite(['resources/css/app.css', 'resources/js/app.jsx'])
