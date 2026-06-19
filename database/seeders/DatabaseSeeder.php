@@ -2,7 +2,6 @@
 
 namespace Database\Seeders;
 
-use App\Models\SubAccount;
 use App\Models\User;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
@@ -25,12 +24,5 @@ class DatabaseSeeder extends Seeder
             ]
         );
 
-        $envSub = (string) config('enabley.sub_account_name', '');
-        if ($envSub !== '') {
-            SubAccount::query()->firstOrCreate(
-                ['name' => $envSub],
-                []
-            );
-        }
     }
 }

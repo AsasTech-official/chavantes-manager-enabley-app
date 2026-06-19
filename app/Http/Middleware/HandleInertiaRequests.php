@@ -3,7 +3,6 @@
 namespace App\Http\Middleware;
 
 use App\Models\IntegrationSetting;
-use App\Models\SubAccount;
 use App\Support\EnableyContext;
 use Illuminate\Http\Request;
 use Inertia\Middleware;
@@ -56,10 +55,8 @@ class HandleInertiaRequests extends Middleware
                     'activeSubAccount' => '',
                 ],
             'subContasSettings' => $request->user()
-                ? $this->shareSubContasSettings()
+                ? $this->shareIntegrationSettings()
                 : [
-                    'items' => [],
-                    'envSubAccount' => '',
                     'hasDefaultUserPassword' => false,
                     'defaultUserPassword' => null,
                 ],
@@ -77,15 +74,13 @@ class HandleInertiaRequests extends Middleware
     }
 
     /**
-     * @return array{envSubAccount: string, hasDefaultUserPassword: bool, defaultUserPassword: string|null}
+     * @return array{hasDefaultUserPassword: bool, defaultUserPassword: string|null}
      */
-    private function shareSubContasSettings(): array
+    private function shareIntegrationSettings(): array
     {
         $integration = IntegrationSetting::current();
 
         return [
-            'items' => SubAccount::query()->orderBy('name')->get(['id', 'name', 'created_at', 'updated_at']),
-            'envSubAccount' => (string) config('enabley.sub_account_name', ''),
             'hasDefaultUserPassword' => $integration->hasDefaultUserPassword(),
             'defaultUserPassword' => $integration->defaultUserPassword(),
         ];

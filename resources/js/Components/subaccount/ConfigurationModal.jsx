@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect } from 'react';
 import { router, useForm } from '@inertiajs/react';
 import { X } from 'lucide-react';
 import AnimatedContent from '@/Components/ui/AnimatedContent';
@@ -6,56 +6,26 @@ import AnimatedDialogBackdrop from '@/Components/ui/AnimatedDialogBackdrop';
 import { DIALOG_MOTION } from '@/Components/ui/dialogMotion';
 
 /**
- * Modal de configuração — gestão de subcontas Enabley na aplicação.
+ * Modal de configuração — senha padrão para novos usuários.
  *
  * @param {object} props
  * @param {boolean} props.open
  * @param {() => void} props.onClose
- * @param {{ id: number; name: string }[]} props.items
- * @param {string} props.activeSubAccount
- * @param {string} props.envSubAccount
  * @param {boolean} props.hasDefaultUserPassword
  * @param {string|null} props.defaultUserPassword
  */
 export default function ConfigurationModal({
     open,
     onClose,
-    items,
-    activeSubAccount,
-    envSubAccount,
     hasDefaultUserPassword = false,
     defaultUserPassword = null,
 }) {
-    const list = Array.isArray(items) ? items : [];
-    const [editingId, setEditingId] = useState(null);
-    const [subAccountSwitching, setSubAccountSwitching] = useState(false);
-
-    const selectableSubAccountNames = useMemo(() => {
-        const set = new Set(list.map((r) => String(r.name ?? '').trim()).filter(Boolean));
-        const env = String(envSubAccount ?? '').trim();
-        if (env !== '') {
-            set.add(env);
-        }
-        const active = String(activeSubAccount ?? '').trim();
-        if (active !== '') {
-            set.add(active);
-        }
-        return [...set].sort((a, b) => a.localeCompare(b));
-    }, [list, envSubAccount, activeSubAccount]);
-
-    const createForm = useForm({ name: '' });
-    const editForm = useForm({ name: '' });
     const passwordForm = useForm({
         default_user_password: '',
     });
 
     useEffect(() => {
         if (!open) {
-            setEditingId(null);
-            editForm.reset();
-            createForm.reset();
-            createForm.clearErrors();
-            editForm.clearErrors();
             passwordForm.reset();
             passwordForm.clearErrors();
         }
@@ -77,35 +47,6 @@ export default function ConfigurationModal({
             document.body.style.overflow = '';
         };
     }, [open, onClose]);
-
-    const startEdit = (row) => {
-        setEditingId(row.id);
-        editForm.setData('name', row.name);
-        editForm.clearErrors();
-    };
-
-    const cancelEdit = () => {
-        setEditingId(null);
-        editForm.reset();
-    };
-
-    const submitEdit = (e) => {
-        e.preventDefault();
-        editForm.put(`/configuracoes/subcontas/${editingId}`, {
-            preserveScroll: true,
-            onSuccess: () => {
-                setEditingId(null);
-                editForm.reset();
-            },
-        });
-    };
-
-    const destroy = (id) => {
-        if (!window.confirm('Remover esta subconta da aplicação?')) {
-            return;
-        }
-        router.delete(`/configuracoes/subcontas/${id}`, { preserveScroll: true });
-    };
 
     if (!open) {
         return null;
@@ -231,207 +172,6 @@ export default function ConfigurationModal({
                                     Remover senha padrão
                                 </button>
                             ) : null}
-                            <hr className="my-6 border-0 border-t border-slate-200" />
-                            <h3 className="mb-3 text-sm font-semibold text-slate-800">Subcontas</h3>
-                            <p className="mb-2 text-sm text-slate-600">
-                                Subconta ativa agora:{' '}
-                                <span className="font-mono font-medium text-slate-800">
-                                    {activeSubAccount || '—'}
-                                </span>
-                            </p>
-                            {selectableSubAccountNames.length > 0 ? (
-                                <div className="mb-4 space-y-2">
-                                    <label
-                                        htmlFor="configuration-active-subaccount"
-                                        className="block text-sm font-medium text-slate-700"
-                                    >
-                                        Mudar subconta ativa
-                                    </label>
-                                    <select
-                                        id="configuration-active-subaccount"
-                                        value={activeSubAccount}
-                                        disabled={subAccountSwitching}
-                                        onChange={(e) => {
-                                            const name = e.target.value;
-                                            if (!name || name === activeSubAccount) {
-                                                return;
-                                            }
-                                            setSubAccountSwitching(true);
-                                            router.post(
-                                                '/configuracoes/subconta-ativa',
-                                                { name },
-                                                {
-                                                    preserveScroll: true,
-                                                    onFinish: () => setSubAccountSwitching(false),
-                                                    onSuccess: () => {
-                                                        router.reload({ preserveScroll: true });
-                                                    },
-                                                },
-                                            );
-                                        }}
-                                        className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm font-mono text-slate-900 shadow-sm focus:border-[#3757A1] focus:outline-none focus:ring-2 focus:ring-[#3757A1]/25 disabled:opacity-60"
-                                    >
-                                        {activeSubAccount === '' ? (
-                                            <option value="" disabled>
-                                                — Escolha uma subconta —
-                                            </option>
-                                        ) : null}
-                                        {selectableSubAccountNames.map((name) => (
-                                            <option key={name} value={name}>
-                                                {name}
-                                            </option>
-                                        ))}
-                                    </select>
-                                    {envSubAccount ? (
-                                        <button
-                                            type="button"
-                                            disabled={subAccountSwitching}
-                                            onClick={() => {
-                                                setSubAccountSwitching(true);
-                                                router.delete('/configuracoes/subconta-ativa', {
-                                                    preserveScroll: true,
-                                                    onFinish: () => setSubAccountSwitching(false),
-                                                    onSuccess: () => {
-                                                        router.reload({ preserveScroll: true });
-                                                    },
-                                                });
-                                            }}
-                                            className="text-left text-sm font-medium text-[#3757A1] underline decoration-[#3757A1]/40 underline-offset-2 hover:text-[#2d4680] disabled:opacity-50"
-                                        >
-                                            Repor para o valor padrão ({envSubAccount})
-                                        </button>
-                                    ) : null}
-                                </div>
-                            ) : null}
-
-                            <h4 className="mb-2 text-sm font-medium text-slate-700">Nova subconta</h4>
-                            <form
-                                onSubmit={(e) => {
-                                    e.preventDefault();
-                                    createForm.post('/configuracoes/subcontas', {
-                                        preserveScroll: true,
-                                        onSuccess: () => createForm.reset('name'),
-                                    });
-                                }}
-                                className="mb-6 flex flex-wrap items-end gap-2"
-                            >
-                                <div className="min-w-0 flex-1">
-                                    <label htmlFor="configuration-modal-new-subaccount" className="sr-only">
-                                        Nome
-                                    </label>
-                                    <input
-                                        id="configuration-modal-new-subaccount"
-                                        value={createForm.data.name}
-                                        onChange={(e) => createForm.setData('name', e.target.value)}
-                                        className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 shadow-sm focus:border-[#3757A1] focus:outline-none focus:ring-2 focus:ring-[#3757A1]/25"
-                                        placeholder="identificador (ex.: demonstracao)"
-                                        autoComplete="off"
-                                    />
-                                    {createForm.errors.name ? (
-                                        <p className="mt-1 text-xs text-red-600">{createForm.errors.name}</p>
-                                    ) : null}
-                                </div>
-                                <button
-                                    type="submit"
-                                    disabled={createForm.processing}
-                                    className="shrink-0 rounded-lg bg-[#3757A1] px-4 py-2 text-sm font-medium text-white shadow hover:opacity-95 disabled:opacity-50"
-                                >
-                                    {createForm.processing ? 'Guardando…' : 'Criar'}
-                                </button>
-                            </form>
-
-                            <h4 className="mb-2 text-sm font-medium text-slate-700">Registadas</h4>
-                            <div className="overflow-x-auto rounded-lg border border-slate-200 bg-white/80">
-                                <table className="w-full min-w-[280px] text-left text-sm">
-                                    <thead>
-                                        <tr className="border-b border-slate-200 text-slate-500">
-                                            <th className="px-3 py-2">Nome</th>
-                                            <th className="w-0 whitespace-nowrap px-3 py-2 text-right">Ações</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        {list.length === 0 ? (
-                                            <tr>
-                                                <td colSpan={2} className="px-3 py-4 text-slate-500">
-                                                    Nenhuma subconta na base de dados. Crie uma acima (pode corresponder à
-                                                    do .env).
-                                                </td>
-                                            </tr>
-                                        ) : null}
-                                        {list.map((row) => (
-                                            <tr key={row.id} className="border-b border-slate-100 last:border-0">
-                                                <td className="px-3 py-2 align-middle">
-                                                    {editingId === row.id ? (
-                                                        <form onSubmit={submitEdit} className="w-full min-w-0 max-w-md space-y-1">
-                                                            <div className="flex flex-wrap gap-2">
-                                                                <input
-                                                                    value={editForm.data.name}
-                                                                    onChange={(e) =>
-                                                                        editForm.setData('name', e.target.value)
-                                                                    }
-                                                                    className="min-w-0 flex-1 rounded border border-slate-300 px-2 py-1 text-slate-900"
-                                                                />
-                                                                <button
-                                                                    type="submit"
-                                                                    disabled={editForm.processing}
-                                                                    className="rounded bg-slate-700 px-2 py-1 text-xs text-white"
-                                                                >
-                                                                    Guardar
-                                                                </button>
-                                                                <button
-                                                                    type="button"
-                                                                    onClick={cancelEdit}
-                                                                    className="rounded border border-slate-300 px-2 py-1 text-xs"
-                                                                >
-                                                                    Cancelar
-                                                                </button>
-                                                            </div>
-                                                            {editForm.errors.name ? (
-                                                                <p className="text-xs text-red-600">{editForm.errors.name}</p>
-                                                            ) : null}
-                                                        </form>
-                                                    ) : (
-                                                        <div className="flex flex-wrap items-center gap-2">
-                                                            <span className="font-mono text-slate-800">{row.name}</span>
-                                                            {row.name === envSubAccount ? (
-                                                                <span className="rounded bg-amber-100 px-1.5 py-0.5 text-xs text-amber-900">
-                                                                    padrão
-                                                                </span>
-                                                            ) : null}
-                                                            {row.name === activeSubAccount ? (
-                                                                <span className="rounded bg-cyan-100 px-1.5 py-0.5 text-xs text-cyan-900">
-                                                                    ativa
-                                                                </span>
-                                                            ) : null}
-                                                        </div>
-                                                    )}
-                                                </td>
-                                                <td className="px-3 py-2 text-right align-middle">
-                                                    {editingId !== row.id ? (
-                                                        <div className="flex justify-end gap-1">
-                                                            <button
-                                                                type="button"
-                                                                onClick={() => startEdit(row)}
-                                                                className="text-xs font-medium text-[#3757A1] hover:underline"
-                                                            >
-                                                                Editar
-                                                            </button>
-                                                            <span className="text-slate-300">|</span>
-                                                            <button
-                                                                type="button"
-                                                                onClick={() => destroy(row.id)}
-                                                                className="text-xs font-medium text-rose-600 hover:underline"
-                                                            >
-                                                                Excluir
-                                                            </button>
-                                                        </div>
-                                                    ) : null}
-                                                </td>
-                                            </tr>
-                                        ))}
-                                    </tbody>
-                                </table>
-                            </div>
                         </div>
                         <div className="shrink-0 border-t border-slate-200 p-4 sm:px-5">
                             <button
