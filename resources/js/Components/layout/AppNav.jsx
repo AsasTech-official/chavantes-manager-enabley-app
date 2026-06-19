@@ -8,8 +8,8 @@ function navTabClass(active) {
     return [
         'cursor-pointer rounded-md px-4 py-2 text-base font-semibold transition sm:text-lg',
         active
-            ? 'bg-black/[0.06] text-[#EF6F6C]'
-            : 'text-[#0d7c78] hover:bg-black/[0.04] hover:text-[#EF6F6C]',
+            ? 'bg-black/[0.06] text-[#46A6B9]'
+            : 'text-[#1F3860] hover:bg-black/[0.04] hover:text-[#46A6B9]',
     ].join(' ');
 }
 

@@ -86,7 +86,7 @@ export default function RoleGroupsModal({ open, onClose, roleCode, entries = [],
                                                     title="Abrir na página de grupos"
                                                     aria-label={`Abrir grupo ${row.name} na página de grupos`}
                                                     onClick={() => goToGroup(row.identifier)}
-                                                    className="inline-flex shrink-0 cursor-pointer items-center justify-center rounded-lg border border-[#20A39E] bg-white p-2 text-[#0d7c78] shadow-sm transition hover:scale-105 hover:bg-[#20A39E] hover:text-white"
+                                                    className="inline-flex shrink-0 cursor-pointer items-center justify-center rounded-lg border border-[#1F3860] bg-white p-2 text-[#0d7c78] shadow-sm transition hover:scale-105 hover:bg-[#1F3860] hover:text-white"
                                                 >
                                                     <Eye className="h-4 w-4" strokeWidth={2.25} aria-hidden />
                                                 </button>

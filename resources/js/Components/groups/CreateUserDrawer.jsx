@@ -36,7 +36,7 @@ const sectionTitleClass =
 const panelClass = 'rounded-xl border border-slate-200/90 bg-white/95 p-4 shadow-sm shadow-slate-900/5';
 const fieldLabelClass = 'block text-xs font-medium text-slate-600';
 const inputClass =
-    'mt-1.5 w-full rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm text-slate-900 shadow-sm transition placeholder:text-slate-400 focus:border-[#20A39E] focus:outline-none focus:ring-2 focus:ring-[#20A39E]/20';
+    'mt-1.5 w-full rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm text-slate-900 shadow-sm transition placeholder:text-slate-400 focus:border-[#1F3860] focus:outline-none focus:ring-2 focus:ring-[#1F3860]/20';
 
 export default function CreateUserDrawer({
     open,
@@ -292,7 +292,7 @@ export default function CreateUserDrawer({
                                                     placeholder="Nome ou identificador…"
                                                     autoComplete="off"
                                                     disabled={form.processing}
-                                                    className="w-full rounded-xl border border-slate-200 bg-white py-2.5 pl-10 pr-3 text-sm text-slate-900 shadow-sm placeholder:text-slate-400 focus:border-[#20A39E] focus:outline-none focus:ring-2 focus:ring-[#20A39E]/20"
+                                                    className="w-full rounded-xl border border-slate-200 bg-white py-2.5 pl-10 pr-3 text-sm text-slate-900 shadow-sm placeholder:text-slate-400 focus:border-[#1F3860] focus:outline-none focus:ring-2 focus:ring-[#1F3860]/20"
                                                 />
                                             </div>
                                             <p className="mt-1.5 text-xs text-slate-500">
@@ -326,7 +326,7 @@ export default function CreateUserDrawer({
                                                 >
                                                     <summary className="flex cursor-pointer list-none items-center gap-3 px-4 py-3 text-left [&::-webkit-details-marker]:hidden">
                                                         <span
-                                                            className="mt-0.5 h-8 w-1 shrink-0 rounded-full bg-[#20A39E]"
+                                                            className="mt-0.5 h-8 w-1 shrink-0 rounded-full bg-[#1F3860]"
                                                             aria-hidden
                                                         />
                                                         <span className="min-w-0 flex-1">
@@ -364,7 +364,7 @@ export default function CreateUserDrawer({
                                                                             <label className="flex cursor-pointer items-start gap-2 rounded-lg px-2 py-1.5 text-sm text-slate-800 transition hover:bg-white">
                                                                                 <input
                                                                                     type="checkbox"
-                                                                                    className="mt-0.5 h-4 w-4 shrink-0 rounded border-slate-300 text-[#20A39E] focus:ring-[#20A39E]/35"
+                                                                                    className="mt-0.5 h-4 w-4 shrink-0 rounded border-slate-300 text-[#1F3860] focus:ring-[#1F3860]/35"
                                                                                     checked={checked}
                                                                                     disabled={form.processing}
                                                                                     onChange={(e) =>

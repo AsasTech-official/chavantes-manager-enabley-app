@@ -1,15 +1,11 @@
 import { useState } from 'react';
-import { FoldVertical, Plus, UnfoldVertical } from 'lucide-react';
+import { FoldVertical, UnfoldVertical } from 'lucide-react';
 import GroupNode from './GroupNode';
 import UserLine from './UserLine';
 
 export default function GroupsAndUsersPanel({
     enableyError,
     enableyTree,
-    groupTypes,
-    onOpenCreateGroup,
-    onOpenEditGroup,
-    onDeleteGroup,
     showOrphanUserSections = true,
     focusGroupIdentifier = '',
     forceExpandedIds,
@@ -30,52 +26,36 @@ export default function GroupsAndUsersPanel({
             {!enableyError && enableyTree ? (
                 <>
                     <div className="flex flex-col gap-3 border-b-2 border-[#04385D] pb-3 sm:flex-row sm:items-center sm:justify-between sm:gap-4">
-                        <h2 className="pl-3 text-lg font-bold leading-snug tracking-tight text-[#20A39E] sm:text-xl">
+                        <h2 className="pl-3 text-lg font-bold leading-snug tracking-tight text-[#1F3860] sm:text-xl">
                             Grupos Organizacionais
                         </h2>
-                        <div className="flex flex-wrap items-stretch justify-end gap-2 sm:shrink-0">
-                            {tree.length > 0 ? (
-                                <button
-                                    type="button"
-                                    onClick={() => {
-                                        setTreeBulkExpanded((prev) => !prev);
-                                        setTreeSync((s) => s + 1);
-                                    }}
-                                    aria-label={
-                                        treeBulkExpanded
-                                            ? 'Recolher toda a árvore de grupos'
-                                            : 'Expandir toda a árvore de grupos'
-                                    }
-                                    className="inline-flex cursor-pointer items-center justify-center gap-2 rounded-lg border border-[#20A39E] bg-white px-3 py-2 text-sm font-medium text-[#20A39E] shadow-sm transition hover:scale-105 hover:border-[#0d7c78]/50 hover:bg-[#20A39E] hover:text-white"
-                                >
-                                    {treeBulkExpanded ? (
-                                        <>
-                                            <FoldVertical className="h-4 w-4" strokeWidth={2.25} aria-hidden />
-                                            Recolher árvore
-                                        </>
-                                    ) : (
-                                        <>
-                                            <UnfoldVertical className="h-4 w-4" strokeWidth={2.25} aria-hidden />
-                                            Expandir árvore
-                                        </>
-                                    )}
-                                </button>
-                            ) : null}
+                        {tree.length > 0 ? (
                             <button
                                 type="button"
-                                onClick={() => onOpenCreateGroup(null)}
-                                disabled={groupTypes.length === 0}
-                                title={
-                                    groupTypes.length === 0
-                                        ? 'Carregue tipos de grupo da API Enabley para criar grupos.'
-                                        : 'Criar grupo no nível raiz (sem grupo pai)'
+                                onClick={() => {
+                                    setTreeBulkExpanded((prev) => !prev);
+                                    setTreeSync((s) => s + 1);
+                                }}
+                                aria-label={
+                                    treeBulkExpanded
+                                        ? 'Recolher toda a árvore de grupos'
+                                        : 'Expandir toda a árvore de grupos'
                                 }
-                                className="inline-flex shrink-0 cursor-pointer items-center justify-center gap-2 rounded-lg border border-[#20A39E] bg-white px-3 py-2 text-sm font-medium text-[#20A39E] shadow-sm transition hover:scale-105 hover:bg-[#20A39E] hover:text-white disabled:cursor-not-allowed disabled:opacity-50"
+                                className="inline-flex cursor-pointer items-center justify-center gap-2 rounded-lg border border-[#1F3860] bg-white px-3 py-2 text-sm font-medium text-[#1F3860] shadow-sm transition hover:scale-105 hover:border-[#0d7c78]/50 hover:bg-[#1F3860] hover:text-white sm:shrink-0"
                             >
-                                <Plus className="h-4 w-4" strokeWidth={2.25} aria-hidden />
-                                Criar grupo raiz
+                                {treeBulkExpanded ? (
+                                    <>
+                                        <FoldVertical className="h-4 w-4" strokeWidth={2.25} aria-hidden />
+                                        Recolher árvore
+                                    </>
+                                ) : (
+                                    <>
+                                        <UnfoldVertical className="h-4 w-4" strokeWidth={2.25} aria-hidden />
+                                        Expandir árvore
+                                    </>
+                                )}
                             </button>
-                        </div>
+                        ) : null}
                     </div>
                     {tree.length === 0 ? (
                         <p className="mt-4 text-sm text-slate-600">Nenhum grupo existente</p>
@@ -86,9 +66,6 @@ export default function GroupsAndUsersPanel({
                                 <GroupNode
                                     key={n.identifier}
                                     node={n}
-                                    onOpenCreateChild={onOpenCreateGroup}
-                                    onOpenEditGroup={onOpenEditGroup}
-                                    onDeleteGroup={onDeleteGroup}
                                     treeSync={treeSync}
                                     treeBulkExpanded={treeBulkExpanded}
                                     focusGroupIdentifier={focusGroupIdentifier}

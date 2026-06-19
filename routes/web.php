@@ -2,7 +2,6 @@
 
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\DefaultUserPasswordController;
-use App\Http\Controllers\EnableyGroupController;
 use App\Http\Controllers\EnableyImportController;
 use App\Http\Controllers\EnableyUserController;
 use App\Http\Controllers\HomeController;
@@ -34,9 +33,6 @@ Route::middleware('auth')->group(function () {
     Route::post('/importacao/usuarios', [EnableyImportController::class, 'importUsers'])->name('importacao.usuarios');
     Route::post('/usuarios', [EnableyUserController::class, 'store'])->name('usuarios.store');
     Route::patch('/usuarios/{identifier}', [EnableyUserController::class, 'update'])->name('usuarios.update');
-    Route::post('/grupos', [EnableyGroupController::class, 'store'])->name('grupos.store');
-    Route::put('/grupos', [EnableyGroupController::class, 'update'])->name('grupos.update');
-    Route::delete('/grupos/{identifier}', [EnableyGroupController::class, 'destroy'])->name('grupos.destroy');
     Route::get('/configuracoes/subcontas', [SubAccountController::class, 'index'])->name('configuracoes.subcontas.index');
     Route::post('/configuracoes/subcontas', [SubAccountController::class, 'store'])->name('configuracoes.subcontas.store');
     Route::put('/configuracoes/subcontas/{subAccount}', [SubAccountController::class, 'update'])->name('configuracoes.subcontas.update');

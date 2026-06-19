@@ -3,7 +3,6 @@ import { flushSync } from 'react-dom';
 import { Head, router, useForm, usePage } from '@inertiajs/react';
 import { Plus } from 'lucide-react';
 import { AppNav, AppPageLayout } from '@/Components/layout';
-import SubAccountHeader from '@/Components/subaccount/SubAccountHeader';
 import {
     buildRoleGroupsFormFromUser,
     CreateUserDrawer,
@@ -182,7 +181,6 @@ export default function Users({
             <AppPageLayout>
                 <AppNav />
                 <main className="mx-auto flex w-full max-w-[min(1920px,calc(100vw-1.5rem))] flex-1 flex-col px-4 pb-10 pt-4 sm:px-6">
-                    <SubAccountHeader subAccountName={activeSubAccount} />
                     <div className="rounded-2xl border border-slate-200/80 bg-[#F2F2E9] p-5 shadow-sm sm:p-8">
                         {enableyError ? (
                             <pre className="mb-4 overflow-x-auto rounded-lg border border-red-200 bg-red-50 p-3 text-xs text-red-800">
@@ -216,7 +214,7 @@ export default function Users({
                                                 ? 'Criar novo usuário na Enabley'
                                                 : 'Defina primeiro a senha padrão em Configurações'
                                         }
-                                        className="inline-flex shrink-0 cursor-pointer items-center justify-center gap-2 rounded-lg border border-[#20A39E] bg-white px-3 py-2 text-sm font-medium text-[#20A39E] shadow-sm transition hover:scale-105 hover:bg-[#20A39E] hover:text-white disabled:cursor-not-allowed disabled:opacity-45 disabled:hover:scale-100 disabled:hover:bg-white disabled:hover:text-[#20A39E]"
+                                        className="inline-flex shrink-0 cursor-pointer items-center justify-center gap-2 rounded-lg border border-[#1F3860] bg-white px-3 py-2 text-sm font-medium text-[#1F3860] shadow-sm transition hover:scale-105 hover:bg-[#1F3860] hover:text-white disabled:cursor-not-allowed disabled:opacity-45 disabled:hover:scale-100 disabled:hover:bg-white disabled:hover:text-[#1F3860]"
                                     >
                                         <Plus className="h-4 w-4" strokeWidth={2.25} aria-hidden />
                                         Criar usuário

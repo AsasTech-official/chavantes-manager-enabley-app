@@ -1,6 +1,5 @@
 import { Head, useForm, usePage } from '@inertiajs/react';
 import { AppNav, AppPageLayout } from '@/Components/layout';
-import SubAccountHeader from '@/Components/subaccount/SubAccountHeader';
 
 /** Navegação completa: evita resposta binária ser tratada como visita Inertia e ignora conflitos do atributo `download` com Content-Disposition. */
 function startModelDownload(path) {
@@ -62,8 +61,7 @@ function Kbd({ children }) {
 
 export default function Import({ enableyGroupTypes = [] }) {
     const page = usePage();
-    const { enabley, subContasSettings, flash } = page.props;
-    const activeSubAccount = enabley?.activeSubAccount ?? '';
+    const { subContasSettings, flash } = page.props;
     const hasDefaultUserPassword = Boolean(subContasSettings?.hasDefaultUserPassword);
 
     const groupsForm = useForm({ file: null });
@@ -78,7 +76,6 @@ export default function Import({ enableyGroupTypes = [] }) {
             <AppPageLayout>
                 <AppNav />
                 <main className="mx-auto flex w-full max-w-4xl flex-1 flex-col px-4 pb-10 pt-4 sm:px-6">
-                    <SubAccountHeader subAccountName={activeSubAccount} />
                     <div className="rounded-2xl border border-slate-200/80 bg-[#F2F2E9] p-5 shadow-sm sm:p-8">
                         <div className="mb-6 border-b-2 border-[#04385D] pb-3">
                             <h1 className="text-lg font-semibold text-slate-900">Importação</h1>
