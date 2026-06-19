@@ -51,15 +51,15 @@ export default function GroupUsersModal({ open, onClose, groupName, groupIdentif
                     {...DIALOG_MOTION}
                     className="pointer-events-auto flex h-[min(90vh,800px)] max-h-[min(90vh,800px)] w-full max-w-[min(1600px,calc(100vw-2rem))] flex-col overflow-hidden"
                 >
-                    <div className="flex h-full min-h-0 flex-col overflow-hidden rounded-2xl border border-[#04385D] bg-[#F2F2E9] shadow-2xl">
-                        <div className="flex shrink-0 items-center justify-between border-b border-slate-200/90 bg-[#04385D] px-5 py-4">
-                            <h2 id={titleId} className="text-lg font-semibold text-[#F2F2E9]">
+                    <div className="flex h-full min-h-0 flex-col overflow-hidden rounded-2xl border border-[#1F3860] bg-white shadow-2xl">
+                        <div className="flex shrink-0 items-center justify-between border-b border-slate-200/90 bg-[#1F3860] px-5 py-4">
+                            <h2 id={titleId} className="text-lg font-semibold text-white">
                                 Usuários do grupo
                             </h2>
                             <button
                                 type="button"
                                 onClick={onClose}
-                                className="flex h-9 w-9 cursor-pointer items-center justify-center rounded-lg text-[#F2F2E9] transition hover:bg-white/10 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#F2F2E9]"
+                                className="flex h-9 w-9 cursor-pointer items-center justify-center rounded-lg text-white transition hover:bg-white/15 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
                                 aria-label="Fechar"
                             >
                                 <X className="h-5 w-5" strokeWidth={2} aria-hidden />
@@ -89,11 +89,11 @@ export default function GroupUsersModal({ open, onClose, groupName, groupIdentif
                                 onTableStatsChange={setTableStats}
                             />
                         </div>
-                        <div className="shrink-0 border-t border-slate-200 p-4 sm:px-5">
+                        <div className="shrink-0 border-t border-slate-200 bg-white p-4 sm:px-5">
                             <button
                                 type="button"
                                 onClick={onClose}
-                                className="w-full cursor-pointer rounded-lg border border-slate-300 bg-white px-4 py-2.5 text-sm font-medium text-slate-700 transition hover:scale-[1.01] hover:bg-slate-50 sm:w-auto"
+                                className="w-full cursor-pointer rounded-lg border border-[#1F3860] bg-white px-4 py-2.5 text-sm font-medium text-[#3757A1] transition hover:bg-[#3757A1] hover:text-white sm:w-auto"
                             >
                                 Fechar
                             </button>

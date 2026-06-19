@@ -2,7 +2,7 @@
 @import 'react-toastify/dist/ReactToastify.css';
 
 :root {
-    --toastify-color-success: #0d7c78;
+    --toastify-color-success: #3757A1;
     --toastify-color-error: #b91c1c;
     --toastify-color-info: #205e8a;
     --toastify-color-warning: #b45309;

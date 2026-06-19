@@ -323,8 +323,8 @@ export default function GroupUsersTable({
                                     const rowStripe = `${
                                         globalRowIndex % 2 === 0
                                             ? 'bg-white'
-                                            : 'bg-[#F2F2E9]/90'
-                                    } group-hover:bg-[#EF6F6C]/12`;
+                                            : 'bg-[#46A6B9]/10'
+                                    } group-hover:bg-[#3757A1]/15`;
                                     return (
                                         <tr
                                             key={`${String(u.identifier ?? '')}-${globalRowIndex}`}

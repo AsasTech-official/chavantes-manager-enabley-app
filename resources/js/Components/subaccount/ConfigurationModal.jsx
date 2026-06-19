@@ -200,7 +200,7 @@ export default function ConfigurationModal({
                                         onChange={(e) =>
                                             passwordForm.setData('default_user_password', e.target.value)
                                         }
-                                        className="mt-1 w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 shadow-sm focus:border-[#0d7c78] focus:outline-none focus:ring-2 focus:ring-[#0d7c78]/25"
+                                        className="mt-1 w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 shadow-sm focus:border-[#3757A1] focus:outline-none focus:ring-2 focus:ring-[#3757A1]/25"
                                         autoComplete="off"
                                         disabled={passwordForm.processing}
                                         minLength={8}
@@ -269,7 +269,7 @@ export default function ConfigurationModal({
                                                 },
                                             );
                                         }}
-                                        className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm font-mono text-slate-900 shadow-sm focus:border-[#0d7c78] focus:outline-none focus:ring-2 focus:ring-[#0d7c78]/25 disabled:opacity-60"
+                                        className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm font-mono text-slate-900 shadow-sm focus:border-[#3757A1] focus:outline-none focus:ring-2 focus:ring-[#3757A1]/25 disabled:opacity-60"
                                     >
                                         {activeSubAccount === '' ? (
                                             <option value="" disabled>
@@ -296,7 +296,7 @@ export default function ConfigurationModal({
                                                     },
                                                 });
                                             }}
-                                            className="text-left text-sm font-medium text-[#0d7c78] underline decoration-[#0d7c78]/40 underline-offset-2 hover:text-[#0a6460] disabled:opacity-50"
+                                            className="text-left text-sm font-medium text-[#3757A1] underline decoration-[#3757A1]/40 underline-offset-2 hover:text-[#2d4680] disabled:opacity-50"
                                         >
                                             Repor para o valor padrão ({envSubAccount})
                                         </button>
@@ -323,7 +323,7 @@ export default function ConfigurationModal({
                                         id="configuration-modal-new-subaccount"
                                         value={createForm.data.name}
                                         onChange={(e) => createForm.setData('name', e.target.value)}
-                                        className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 shadow-sm focus:border-[#0d7c78] focus:outline-none focus:ring-2 focus:ring-[#0d7c78]/25"
+                                        className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 shadow-sm focus:border-[#3757A1] focus:outline-none focus:ring-2 focus:ring-[#3757A1]/25"
                                         placeholder="identificador (ex.: demonstracao)"
                                         autoComplete="off"
                                     />
@@ -334,7 +334,7 @@ export default function ConfigurationModal({
                                 <button
                                     type="submit"
                                     disabled={createForm.processing}
-                                    className="shrink-0 rounded-lg bg-[#0d7c78] px-4 py-2 text-sm font-medium text-white shadow hover:opacity-95 disabled:opacity-50"
+                                    className="shrink-0 rounded-lg bg-[#3757A1] px-4 py-2 text-sm font-medium text-white shadow hover:opacity-95 disabled:opacity-50"
                                 >
                                     {createForm.processing ? 'Guardando…' : 'Criar'}
                                 </button>
@@ -412,7 +412,7 @@ export default function ConfigurationModal({
                                                             <button
                                                                 type="button"
                                                                 onClick={() => startEdit(row)}
-                                                                className="text-xs font-medium text-[#0d7c78] hover:underline"
+                                                                className="text-xs font-medium text-[#3757A1] hover:underline"
                                                             >
                                                                 Editar
                                                             </button>

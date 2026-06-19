@@ -30,46 +30,15 @@ class EnableyImportController extends Controller
 
     public function index(): Response
     {
-        $enableyGroupTypes = [];
-        try {
-            $enableyGroupTypes = $this->enabley->getGroupHierarchy();
-        } catch (Throwable) {
-            $enableyGroupTypes = [];
-        }
-
-        return Inertia::render('Import', [
-            'enableyGroupTypes' => $enableyGroupTypes,
-        ]);
+        return Inertia::render('Import');
     }
 
     public function downloadTemplate(string $kind): BinaryFileResponse
     {
         return match ($kind) {
-            'grupos' => $this->xlsxDownloadResponse('modelo-grupos.xlsx', $this->groupTemplateRows()),
             'usuarios' => $this->xlsxDownloadResponse('modelo-usuarios.xlsx', $this->userTemplateRows()),
             default => abort(404),
         };
-    }
-
-    /**
-     * @return list<list<string>>
-     */
-    private function groupTemplateRows(): array
-    {
-        $exampleType = 'TIPO';
-        try {
-            $h = $this->enabley->getGroupHierarchy();
-            if ($h !== [] && isset($h[0])) {
-                $exampleType = mb_strtoupper(trim((string) $h[0]), 'UTF-8');
-            }
-        } catch (Throwable) {
-        }
-
-        return [
-            ['name', 'type', 'parent_identifier', 'parent_ref', 'ref'],
-            ['ESCOLA EXEMPLO', $exampleType, '', '', 'escola_1'],
-            ['TURMA A', $exampleType, '', 'escola_1', 'turma_a'],
-        ];
     }
 
     /**
@@ -104,142 +73,6 @@ class EnableyImportController extends Controller
         return response()->download($path, $downloadFilename, [
             'Content-Type' => 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
         ])->deleteFileAfterSend(true);
-    }
-
-    public function importGroups(Request $request): RedirectResponse
-    {
-        $request->validate([
-            'file' => ['required', File::types(['xlsx'])->max(10240)],
-        ]);
-        /** @var UploadedFile $file */
-        $file = $request->file('file');
-
-        try {
-            $hierarchy = $this->enabley->getGroupHierarchy();
-        } catch (Throwable $e) {
-            return redirect()->route('importacao')->with('error', $e->getMessage());
-        }
-        if ($hierarchy === []) {
-            return redirect()->route('importacao')->with('error', 'A API Enabley não devolveu tipos na hierarquia de grupos.');
-        }
-        $allowed = array_values(array_unique(array_map(
-            fn ($t) => mb_strtoupper(trim((string) $t), 'UTF-8'),
-            $hierarchy
-        )));
-
-        try {
-            $rows = $this->readKeyedImportRows($file, fn (string $h) => $this->normalizeGroupHeaderKey($h));
-        } catch (Throwable $e) {
-            return redirect()->route('importacao')->with('error', $e->getMessage());
-        }
-
-        if (! isset($rows['has_name'], $rows['has_type']) || ! $rows['has_name'] || ! $rows['has_type']) {
-            return redirect()->route('importacao')->with('error', 'O ficheiro deve incluir as colunas name e type (cabeçalho na linha 1, nomes exactos).');
-        }
-
-        $dataRows = $rows['rows'];
-        if (count($dataRows) === 0) {
-            return redirect()->route('importacao')->with('error', 'O ficheiro não tem linhas de dados.');
-        }
-        if (count($dataRows) > self::MAX_DATA_ROWS) {
-            return redirect()->route('importacao')->with('error', 'Máximo de '.self::MAX_DATA_ROWS.' linhas por ficheiro.');
-        }
-
-        try {
-            $flat = $this->enabley->listFlatGroups();
-        } catch (Throwable $e) {
-            return redirect()->route('importacao')->with('error', $e->getMessage());
-        }
-        $validGroupIds = array_column($flat, 'identifier');
-        $knownParent = array_fill_keys($validGroupIds, true);
-        $refToId = [];
-        $details = [];
-        $ok = 0;
-        $fail = 0;
-
-        foreach ($dataRows as ['line' => $lineNum, 'cols' => $r]) {
-            $name = mb_strtoupper(trim($r['name'] ?? ''), 'UTF-8');
-            $type = mb_strtoupper(trim($r['type'] ?? ''), 'UTF-8');
-            $ref = trim((string) ($r['ref'] ?? ''));
-            $parentRef = trim((string) ($r['parent_ref'] ?? ''));
-            $parentIdentifier = trim((string) ($r['parent_identifier'] ?? ''));
-
-            if ($name === '' || $type === '') {
-                $fail++;
-                $details[] = ['line' => $lineNum, 'status' => 'error', 'message' => 'Campos name e type são obrigatórios.'];
-
-                continue;
-            }
-            if (! in_array($type, $allowed, true)) {
-                $fail++;
-                $details[] = ['line' => $lineNum, 'status' => 'error', 'message' => 'Tipo inválido para a hierarquia Enabley: '.$type];
-
-                continue;
-            }
-            if ($parentRef !== '' && $parentIdentifier !== '') {
-                $fail++;
-                $details[] = ['line' => $lineNum, 'status' => 'error', 'message' => 'Não combine parent_ref com parent_identifier.'];
-
-                continue;
-            }
-
-            $parentId = null;
-            if ($parentRef !== '') {
-                if (! isset($refToId[$parentRef])) {
-                    $fail++;
-                    $details[] = ['line' => $lineNum, 'status' => 'error', 'message' => 'parent_ref desconhecido: '.$parentRef];
-
-                    continue;
-                }
-                $parentId = $refToId[$parentRef];
-            } elseif ($parentIdentifier !== '') {
-                if (! isset($knownParent[$parentIdentifier])) {
-                    $fail++;
-                    $details[] = ['line' => $lineNum, 'status' => 'error', 'message' => 'parent_identifier não existe nesta subconta ou ainda não foi criado neste ficheiro.'];
-
-                    continue;
-                }
-                $parentId = $parentIdentifier;
-            }
-
-            if ($ref !== '' && isset($refToId[$ref])) {
-                $fail++;
-                $details[] = ['line' => $lineNum, 'status' => 'error', 'message' => 'Valor ref duplicado no ficheiro: '.$ref];
-
-                continue;
-            }
-
-            try {
-                $created = $this->enabley->createGroup($name, $type, $parentId);
-            } catch (Throwable $e) {
-                $fail++;
-                $details[] = ['line' => $lineNum, 'status' => 'error', 'message' => $e->getMessage()];
-
-                continue;
-            }
-
-            $newId = $created['identifier'] ?? '';
-            if (! is_string($newId) || $newId === '') {
-                $fail++;
-                $details[] = ['line' => $lineNum, 'status' => 'error', 'message' => 'A API não devolveu o identificador do grupo.'];
-
-                continue;
-            }
-            $knownParent[$newId] = true;
-            if ($ref !== '') {
-                $refToId[$ref] = $newId;
-            }
-            $ok++;
-            $details[] = ['line' => $lineNum, 'status' => 'ok', 'identifier' => $newId, 'name' => $name];
-        }
-
-        $summary = $fail === 0
-            ? "Grupos: {$ok} criados."
-            : "Grupos: {$ok} criados, {$fail} falharam (ver detalhes abaixo).";
-
-        return redirect()->route('importacao')
-            ->with('success', $summary)
-            ->with('import_groups', ['ok' => $ok, 'failed' => $fail, 'rows' => $details]);
     }
 
     public function importUsers(Request $request): RedirectResponse
@@ -503,20 +336,6 @@ class EnableyImportController extends Controller
         }
 
         return true;
-    }
-
-    private function normalizeGroupHeaderKey(string $h): string
-    {
-        $k = mb_strtolower(str_replace(["\xc2\xa0", ' '], '_', trim($h)), 'UTF-8');
-
-        return match ($k) {
-            'name' => 'name',
-            'type' => 'type',
-            'parent_identifier' => 'parent_identifier',
-            'parent_ref' => 'parent_ref',
-            'ref' => 'ref',
-            default => '',
-        };
     }
 
     private function normalizeUserHeaderKey(string $h): string

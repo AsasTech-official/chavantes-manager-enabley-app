@@ -296,7 +296,7 @@ export default function AppNav() {
                                                                         setSubAccountPickerOpen(false);
                                                                         closeUserMenu();
                                                                     }}
-                                                                    className="w-full cursor-pointer rounded-md px-2 py-2 text-left text-xs font-medium text-[#0d7c78] underline decoration-[#0d7c78]/35 underline-offset-2 hover:bg-slate-50 hover:no-underline disabled:cursor-not-allowed disabled:opacity-50"
+                                                                    className="w-full cursor-pointer rounded-md px-2 py-2 text-left text-xs font-medium text-[#3757A1] underline decoration-[#3757A1]/35 underline-offset-2 hover:bg-slate-50 hover:no-underline disabled:cursor-not-allowed disabled:opacity-50"
                                                                 >
                                                                     Repor para padrão ({envSubAccount})
                                                                 </button>
@@ -381,7 +381,7 @@ export default function AppNav() {
                                 href="/home"
                                 onClick={closeMenu}
                                 className={`cursor-pointer rounded-lg px-3 py-3.5 text-lg font-semibold transition hover:bg-black/[0.04] hover:text-[#EF6F6C] ${
-                                    isGrupos ? 'bg-black/[0.06] text-[#EF6F6C]' : 'text-[#0d7c78]'
+                                    isGrupos ? 'bg-black/[0.06] text-[#EF6F6C]' : 'text-[#3757A1]'
                                 }`}
                             >
                                 Grupos
@@ -390,7 +390,7 @@ export default function AppNav() {
                                 href="/usuarios"
                                 onClick={closeMenu}
                                 className={`cursor-pointer rounded-lg px-3 py-3.5 text-lg font-semibold transition hover:bg-black/[0.04] hover:text-[#EF6F6C] ${
-                                    isUsuarios ? 'bg-black/[0.06] text-[#EF6F6C]' : 'text-[#0d7c78]'
+                                    isUsuarios ? 'bg-black/[0.06] text-[#EF6F6C]' : 'text-[#3757A1]'
                                 }`}
                             >
                                 Usuários
@@ -399,7 +399,7 @@ export default function AppNav() {
                                 href="/importacao"
                                 onClick={closeMenu}
                                 className={`cursor-pointer rounded-lg px-3 py-3.5 text-lg font-semibold transition hover:bg-black/[0.04] hover:text-[#EF6F6C] ${
-                                    isImportacao ? 'bg-black/[0.06] text-[#EF6F6C]' : 'text-[#0d7c78]'
+                                    isImportacao ? 'bg-black/[0.06] text-[#EF6F6C]' : 'text-[#3757A1]'
                                 }`}
                             >
                                 Importação
@@ -479,7 +479,7 @@ export default function AppNav() {
                                                         setMobileSubPickerOpen(false);
                                                         closeMenu();
                                                     }}
-                                                    className="w-full cursor-pointer text-left text-xs font-medium text-[#0d7c78] underline decoration-[#0d7c78]/35 underline-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                                                    className="w-full cursor-pointer text-left text-xs font-medium text-[#3757A1] underline decoration-[#3757A1]/35 underline-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
                                                 >
                                                     Repor para padrão ({envSubAccount})
                                                 </button>

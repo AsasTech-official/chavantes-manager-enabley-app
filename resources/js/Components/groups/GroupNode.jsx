@@ -63,7 +63,7 @@ export default function GroupNode({
                             {canToggle ? (
                                 <button
                                     type="button"
-                                    className="mt-0.5 flex h-6 w-6 shrink-0 cursor-pointer items-center justify-center rounded-md text-[#0d7c78] transition hover:bg-slate-200/80 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-[#0d7c78]"
+                                    className="mt-0.5 flex h-6 w-6 shrink-0 cursor-pointer items-center justify-center rounded-md text-[#3757A1] transition hover:bg-slate-200/80 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-[#3757A1]"
                                     onClick={() => setOpen((v) => !v)}
                                     aria-expanded={open}
                                     aria-label={open ? 'Recolher grupo' : 'Expandir grupo'}
@@ -78,13 +78,13 @@ export default function GroupNode({
                                 <span className="w-6 shrink-0" aria-hidden />
                             )}
                             <div className="min-w-0 flex-1">
-                                <div className="flex min-w-0 flex-wrap items-center gap-x-1.5 gap-y-0.5 text-sm font-medium text-[#0d7c78]">
+                                <div className="flex min-w-0 flex-wrap items-center gap-x-1.5 gap-y-0.5 text-sm font-medium text-[#3757A1]">
                                     <span>{node.name}</span>
                                     {node.type ? (
                                         <span className="text-xs font-normal text-slate-500">{node.type}</span>
                                     ) : null}
                                     <span
-                                        className="inline-flex h-5 min-w-[1.25rem] shrink-0 items-center justify-center rounded-full bg-[#1F3860]/20 px-1 text-[0.65rem] font-semibold tabular-nums leading-none text-[#0d7c78]"
+                                        className="inline-flex h-5 min-w-[1.25rem] shrink-0 items-center justify-center rounded-full bg-[#1F3860]/20 px-1 text-[0.65rem] font-semibold tabular-nums leading-none text-[#3757A1]"
                                         title={`${userCount} usuário${userCount === 1 ? '' : 's'}`}
                                     >
                                         {userCount}
@@ -97,7 +97,7 @@ export default function GroupNode({
                 <div className="shrink-0 justify-self-end self-start pt-1">
                     <button
                         type="button"
-                        className="inline-flex cursor-pointer items-center gap-1.5 rounded-md border border-[#1F3860] bg-white px-2.5 py-1.5 text-xs font-medium text-[#0d7c78] shadow-sm transition hover:scale-[1.02] hover:bg-[#1F3860] hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#0d7c78] sm:text-sm"
+                        className="inline-flex cursor-pointer items-center gap-1.5 rounded-md border border-[#1F3860] bg-white px-2.5 py-1.5 text-xs font-medium text-[#3757A1] shadow-sm transition hover:scale-[1.02] hover:bg-[#1F3860] hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#3757A1] sm:text-sm"
                         onClick={() => setUsersModalOpen(true)}
                     >
                         <Eye className="h-4 w-4 shrink-0" strokeWidth={2.25} aria-hidden />

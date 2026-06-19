@@ -41,7 +41,7 @@ export default function GroupsAndUsersPanel({
                                         ? 'Recolher toda a árvore de grupos'
                                         : 'Expandir toda a árvore de grupos'
                                 }
-                                className="inline-flex cursor-pointer items-center justify-center gap-2 rounded-lg border border-[#1F3860] bg-white px-3 py-2 text-sm font-medium text-[#1F3860] shadow-sm transition hover:scale-105 hover:border-[#0d7c78]/50 hover:bg-[#1F3860] hover:text-white sm:shrink-0"
+                                className="inline-flex cursor-pointer items-center justify-center gap-2 rounded-lg border border-[#1F3860] bg-white px-3 py-2 text-sm font-medium text-[#1F3860] shadow-sm transition hover:scale-105 hover:border-[#3757A1]/50 hover:bg-[#1F3860] hover:text-white sm:shrink-0"
                             >
                                 {treeBulkExpanded ? (
                                     <>

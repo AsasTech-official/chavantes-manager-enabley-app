@@ -111,7 +111,7 @@ export default function EditUserDrawer({ open, onClose, user, form, groups = [],
                 direction="horizontal"
                 className="absolute right-0 top-0 z-10 h-full w-full max-w-xl"
             >
-                <aside className="flex h-full min-h-0 w-full flex-col border-l border-[#04385D]/80 bg-[#F2F2E9] shadow-2xl">
+                <aside className="flex h-full min-h-0 w-full flex-col border-l border-[#04385D]/80 bg-[#ffffff] shadow-2xl">
                     <div className="flex shrink-0 items-center justify-between border-b border-white/10 bg-[#04385D] px-6 py-4">
                         <div>
                             <h2 id="edit-user-title" className="text-lg font-semibold tracking-tight text-[#F2F2E9]">

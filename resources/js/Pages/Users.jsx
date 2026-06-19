@@ -181,7 +181,7 @@ export default function Users({
             <AppPageLayout>
                 <AppNav />
                 <main className="mx-auto flex w-full max-w-[min(1920px,calc(100vw-1.5rem))] flex-1 flex-col px-4 pb-10 pt-4 sm:px-6">
-                    <div className="rounded-2xl border border-slate-200/80 bg-[#F2F2E9] p-5 shadow-sm sm:p-8">
+                    <div className="rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm sm:p-8">
                         {enableyError ? (
                             <pre className="mb-4 overflow-x-auto rounded-lg border border-red-200 bg-red-50 p-3 text-xs text-red-800">
                                 {enableyError}
@@ -191,14 +191,14 @@ export default function Users({
                             <>
                                 <div className="flex flex-col gap-3 border-b-2 border-[#04385D] pb-3 sm:flex-row sm:items-center sm:justify-between sm:gap-4">
                                     <div>
-                                        <h2 className="text-base font-semibold text-slate-800">Usuários</h2>
+                                        <h2 className="text-base font-semibold text-[#1F3860]">Usuários</h2>
                                         <p className="mt-1 text-sm text-slate-600">
                                             {enableyUsers.length === 0
                                                 ? 'Nenhum usuário na subconta.'
                                                 : `${enableyUsers.length} usuário${enableyUsers.length === 1 ? '' : 's'}`}
                                         </p>
                                         {!hasDefaultUserPassword ? (
-                                            <p className="mt-2 text-sm text-amber-900">
+                                            <p className="mt-2 text-sm text-red-700">
                                                 Defina a <span className="font-medium">senha padrão</span> em{' '}
                                                 <span className="font-medium">Configurações </span> 
                                                 para poder criar usuários.

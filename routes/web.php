@@ -27,9 +27,8 @@ Route::middleware('auth')->group(function () {
     Route::get('/usuarios', UsersController::class)->name('usuarios');
     Route::get('/importacao', [EnableyImportController::class, 'index'])->name('importacao');
     Route::get('/importacao/modelo/{kind}', [EnableyImportController::class, 'downloadTemplate'])
-        ->whereIn('kind', ['grupos', 'usuarios'])
+        ->whereIn('kind', ['usuarios'])
         ->name('importacao.modelo');
-    Route::post('/importacao/grupos', [EnableyImportController::class, 'importGroups'])->name('importacao.grupos');
     Route::post('/importacao/usuarios', [EnableyImportController::class, 'importUsers'])->name('importacao.usuarios');
     Route::post('/usuarios', [EnableyUserController::class, 'store'])->name('usuarios.store');
     Route::patch('/usuarios/{identifier}', [EnableyUserController::class, 'update'])->name('usuarios.update');
