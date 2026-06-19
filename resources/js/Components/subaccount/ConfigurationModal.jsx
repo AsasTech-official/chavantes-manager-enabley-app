@@ -62,7 +62,7 @@ export default function ConfigurationModal({
                     {...DIALOG_MOTION}
                     className="pointer-events-auto flex max-h-[min(90vh,720px)] w-full max-w-lg flex-col overflow-hidden"
                 >
-                    <div className="flex max-h-[min(90vh,720px)] min-h-0 flex-col overflow-hidden rounded-2xl border border-[#04385D] bg-[#F2F2E9] shadow-2xl">
+                    <div className="flex max-h-[min(90vh,720px)] min-h-0 flex-col overflow-hidden rounded-2xl border border-[#04385D] bg-[#ffffff] shadow-2xl">
                         <div className="flex shrink-0 items-center justify-between border-b border-slate-200/90 bg-[#04385D] px-5 py-4">
                             <h2 id={titleId} className="text-lg font-semibold text-[#F2F2E9]">
                                 Configurações

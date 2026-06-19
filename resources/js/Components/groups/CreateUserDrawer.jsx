@@ -6,26 +6,12 @@ import { DIALOG_MOTION } from '@/Components/ui/dialogMotion';
 
 /** Valores UserData.possibleRoles (API v2 Enabley) + rótulos em português */
 export const ENABLEY_CREATE_USER_ROLE_OPTIONS = [
-    { value: 'LEARNER', label: 'Aluno' },
-    { value: 'INSTRUCTOR', label: 'Instrutor' },
-    { value: 'EDITOR', label: 'Editor' },
-    { value: 'MANAGER', label: 'Gerente' },
-    { value: 'PREVIEW', label: 'Pré-visualização' },
-    { value: 'HR_MANAGER', label: 'Gestor de RH' },
-    { value: 'SITE_TRAINING_MANAGER', label: 'Gestor de formação (site)' },
-    { value: 'EVALUATOR', label: 'Avaliador' },
+    { value: 'LEARNER', label: 'Aluno' }
 ];
 
 /** Títulos das secções de grupos por função (mesma ordem que ENABLEY_CREATE_USER_ROLE_OPTIONS). */
 const GROUP_ROLE_SECTION_TITLES = {
     LEARNER: 'Grupos como aluno',
-    INSTRUCTOR: 'Grupos como instrutor',
-    EDITOR: 'Grupos como editor',
-    MANAGER: 'Grupos como gerente',
-    PREVIEW: 'Grupos — pré-visualização',
-    HR_MANAGER: 'Grupos como gestor de RH',
-    SITE_TRAINING_MANAGER: 'Grupos como gestor de formação (site)',
-    EVALUATOR: 'Grupos como avaliador',
 };
 
 /** Criação de utilizador: apenas aluno (LEARNER); grupos são associação como membro. */
@@ -127,7 +113,7 @@ export default function CreateUserDrawer({
                 direction="horizontal"
                 className="absolute right-0 top-0 z-10 h-full w-full max-w-xl"
             >
-                <aside className="flex h-full min-h-0 w-full flex-col border-l border-[#04385D]/80 bg-[#F2F2E9] shadow-2xl">
+                <aside className="flex h-full min-h-0 w-full flex-col border-l border-[#04385D]/80 bg-[#ffffff] shadow-2xl">
                     <div className="flex shrink-0 items-center justify-between border-b border-white/10 bg-[#04385D] px-6 py-4">
                         <div>
                             <h2 id="create-user-title" className="text-lg font-semibold tracking-tight text-[#F2F2E9]">
