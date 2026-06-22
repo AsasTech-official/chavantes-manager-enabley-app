@@ -21,6 +21,7 @@ class DatabaseSeeder extends Seeder
             [
                 'name' => 'Grupo Chavantes',
                 'password' => Hash::make('password'),
+                'access_mode' => 'admin',
             ]
         );
 

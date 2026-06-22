@@ -4,6 +4,7 @@ namespace App\Http\Middleware;
 
 use App\Models\IntegrationSetting;
 use App\Support\EnableyContext;
+use App\Support\EnableyScopeContext;
 use Illuminate\Http\Request;
 use Inertia\Middleware;
 
@@ -46,7 +47,13 @@ class HandleInertiaRequests extends Middleware
             ],
             'auth' => [
                 'user' => $request->user()
-                    ? $request->user()->only('id', 'username', 'name')
+                    ? $request->user()->only('id', 'username', 'name', 'access_mode', 'enabley_username', 'enabley_identifier')
+                    : null,
+                'accessMode' => $request->user()
+                    ? EnableyScopeContext::current()->accessMode
+                    : null,
+                'enableyUsername' => $request->user()
+                    ? EnableyScopeContext::current()->enableyUsername
                     : null,
             ],
             'enabley' => $request->user()
@@ -55,7 +62,7 @@ class HandleInertiaRequests extends Middleware
                     'activeSubAccount' => '',
                 ],
             'subContasSettings' => $request->user()
-                ? $this->shareIntegrationSettings()
+                ? $this->shareIntegrationSettings($request)
                 : [
                     'hasDefaultUserPassword' => false,
                     'defaultUserPassword' => null,
@@ -76,13 +83,14 @@ class HandleInertiaRequests extends Middleware
     /**
      * @return array{hasDefaultUserPassword: bool, defaultUserPassword: string|null}
      */
-    private function shareIntegrationSettings(): array
+    private function shareIntegrationSettings(Request $request): array
     {
         $integration = IntegrationSetting::current();
+        $isAdmin = EnableyScopeContext::current()->isAdmin();
 
         return [
             'hasDefaultUserPassword' => $integration->hasDefaultUserPassword(),
-            'defaultUserPassword' => $integration->defaultUserPassword(),
+            'defaultUserPassword' => $isAdmin ? $integration->defaultUserPassword() : null,
         ];
     }
 }

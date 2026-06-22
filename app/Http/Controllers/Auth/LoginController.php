@@ -3,18 +3,23 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
+use App\Services\EnableyAuthService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
 use Inertia\Response;
+use RuntimeException;
+use Throwable;
 
 class LoginController extends Controller
 {
+    public function __construct(
+        private EnableyAuthService $enableyAuth,
+    ) {}
+
     /**
      * Display the login view.
-     * @return Response
      */
     public function create(): Response
     {
@@ -28,18 +33,39 @@ class LoginController extends Controller
             'password' => ['required', 'string'],
         ]);
 
-        if (! Auth::attempt($credentials, $request->boolean('remember'))) {
+        try {
+            $result = $this->enableyAuth->attempt(
+                $credentials['username'],
+                $credentials['password'],
+                $request->boolean('remember'),
+            );
+        } catch (RuntimeException $e) {
             if ($request->expectsJson()) {
                 return response()->json([
-                    'message' => __('auth.failed'),
+                    'message' => $e->getMessage(),
                     'errors' => [
-                        'username' => [__('auth.failed')],
+                        'username' => [$e->getMessage()],
                     ],
                 ], 422);
             }
 
             return back()->withErrors([
-                'username' => __('auth.failed'),
+                'username' => $e->getMessage(),
+            ])->onlyInput('username');
+        } catch (Throwable $e) {
+            $message = $e->getMessage() ?: __('auth.failed');
+
+            if ($request->expectsJson()) {
+                return response()->json([
+                    'message' => $message,
+                    'errors' => [
+                        'username' => [$message],
+                    ],
+                ], 422);
+            }
+
+            return back()->withErrors([
+                'username' => $message,
             ])->onlyInput('username');
         }
 
@@ -47,9 +73,10 @@ class LoginController extends Controller
 
         if ($request->expectsJson()) {
             $redirect = $request->session()->pull('url.intended', route('home'));
+            $user = $result['user'];
 
             return response()->json([
-                'user' => $request->user()->only('id', 'username', 'name'),
+                'user' => $user->only('id', 'username', 'name', 'access_mode', 'enabley_username', 'enabley_identifier'),
                 'redirect' => $redirect,
             ]);
         }
@@ -59,7 +86,7 @@ class LoginController extends Controller
 
     public function destroy(Request $request): JsonResponse|RedirectResponse
     {
-        Auth::guard('web')->logout();
+        $this->enableyAuth->logout();
 
         $request->session()->invalidate();
         $request->session()->regenerateToken();
@@ -70,6 +97,6 @@ class LoginController extends Controller
             ]);
         }
 
-       return redirect()->route('login');
+        return redirect()->route('login');
     }
 }

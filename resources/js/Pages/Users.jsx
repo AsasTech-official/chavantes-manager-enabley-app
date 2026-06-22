@@ -45,9 +45,10 @@ export default function Users({
     enableyGroupsError = null,
 }) {
     const page = usePage();
-    const { enabley, subContasSettings } = page.props;
+    const { enabley, subContasSettings, auth } = page.props;
     const activeSubAccount = enabley?.activeSubAccount ?? '';
     const hasDefaultUserPassword = Boolean(subContasSettings?.hasDefaultUserPassword);
+    const isManager = auth?.accessMode === 'manager';
 
     const [createDrawerOpen, setCreateDrawerOpen] = useState(false);
     /** Incrementa ao abrir o drawer para remount limpo (evita estado visual residual no off-canvas). */
@@ -199,9 +200,19 @@ export default function Users({
                                         </p>
                                         {!hasDefaultUserPassword ? (
                                             <p className="mt-2 text-sm text-red-700">
-                                                Defina a <span className="font-medium">senha padrão</span> em{' '}
-                                                <span className="font-medium">Configurações </span> 
-                                                para poder criar usuários.
+                                                {isManager ? (
+                                                    <>
+                                                        Peça a um administrador para definir a{' '}
+                                                        <span className="font-medium">senha padrão</span> antes de
+                                                        criar usuários.
+                                                    </>
+                                                ) : (
+                                                    <>
+                                                        Defina a <span className="font-medium">senha padrão</span> em{' '}
+                                                        <span className="font-medium">Configurações</span> para poder
+                                                        criar usuários.
+                                                    </>
+                                                )}
                                             </p>
                                         ) : null}
                                     </div>
@@ -212,7 +223,9 @@ export default function Users({
                                         title={
                                             hasDefaultUserPassword
                                                 ? 'Criar novo usuário na Enabley'
-                                                : 'Defina primeiro a senha padrão em Configurações'
+                                                : isManager
+                                                  ? 'A senha padrão deve ser definida por um administrador'
+                                                  : 'Defina primeiro a senha padrão em Configurações'
                                         }
                                         className="inline-flex shrink-0 cursor-pointer items-center justify-center gap-2 rounded-lg border border-[#1F3860] bg-white px-3 py-2 text-sm font-medium text-[#1F3860] shadow-sm transition hover:scale-105 hover:bg-[#1F3860] hover:text-white disabled:cursor-not-allowed disabled:opacity-45 disabled:hover:scale-100 disabled:hover:bg-white disabled:hover:text-[#1F3860]"
                                     >
@@ -244,6 +257,7 @@ export default function Users({
                 form={form}
                 groups={enableyGroups}
                 groupsError={enableyGroupsError}
+                isManager={isManager}
                 postOptions={{
                     onSuccess: () => {
                         flushSync(() => {

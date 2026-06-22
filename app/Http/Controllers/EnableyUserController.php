@@ -2,8 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\EnableyUserManagerGroup;
 use App\Models\IntegrationSetting;
 use App\Services\EnableyApiService;
+use App\Services\EnableyScopeService;
+use App\Support\EnableyScope;
+use App\Support\EnableyScopeContext;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
@@ -41,10 +45,12 @@ class EnableyUserController extends Controller
 
     public function __construct(
         private EnableyApiService $enabley,
+        private EnableyScopeService $scopeService,
     ) {}
 
     public function store(Request $request): RedirectResponse
     {
+        $scope = EnableyScopeContext::current();
         $settings = IntegrationSetting::current();
         if (! $settings->hasDefaultUserPassword()) {
             return redirect()->route('usuarios')->with(
@@ -73,7 +79,7 @@ class EnableyUserController extends Controller
         /** @var string $password */
         $password = $settings->defaultUserPassword();
         $roles = array_values(array_unique($data['possible_roles']));
-        $roleGroupsToApply = $this->validatedRoleGroupsMap($request, $roles);
+        $roleGroupsToApply = $this->validatedRoleGroupsMap($request, $roles, $scope);
 
         try {
             $email = isset($data['email']) && is_string($data['email'])
@@ -106,6 +112,15 @@ class EnableyUserController extends Controller
                         $this->enabley->assignUserToGroup($userId, $groupId, false);
                     }
                     $this->enabley->addUserGroupEntitlement($userId, $groupId, $rk);
+                    if ($rk === 'MANAGER') {
+                        $this->enabley->persistUserManagerGroups($userId, array_merge(
+                            [$groupId],
+                            EnableyUserManagerGroup::query()
+                                ->where('enabley_user_identifier', $userId)
+                                ->pluck('group_identifier')
+                                ->all()
+                        ));
+                    }
                 }
             }
         } catch (Throwable $e) {
@@ -120,6 +135,14 @@ class EnableyUserController extends Controller
         $identifier = trim($identifier);
         if ($identifier === '') {
             abort(404);
+        }
+
+        $scope = EnableyScopeContext::current();
+
+        try {
+            $this->scopeService->assertUserInScope($identifier, $scope);
+        } catch (RuntimeException $e) {
+            return redirect()->route('usuarios')->with('error', $e->getMessage());
         }
 
         $rawEmail = $request->input('email');
@@ -150,7 +173,7 @@ class EnableyUserController extends Controller
         $statusOnly = $request->boolean('status_only');
         $learnerGroupsToApply = [];
         if (! $statusOnly) {
-            $learnerGroupsToApply = $this->validatedLearnerRoleGroupsOnly($request, $roles);
+            $learnerGroupsToApply = $this->validatedLearnerRoleGroupsOnly($request, $roles, $scope);
         }
 
         try {
@@ -190,9 +213,9 @@ class EnableyUserController extends Controller
      * @param  list<string>  $roles  Papéis do utilizador (possible_roles).
      * @return array<string, list<string>>
      */
-    private function validatedRoleGroupsMap(Request $request, array $roles): array
+    private function validatedRoleGroupsMap(Request $request, array $roles, EnableyScope $scope): array
     {
-        $validGroupIds = array_column($this->enabley->listFlatGroups(), 'identifier');
+        $validGroupIds = array_column($this->scopeService->filterFlatGroups($this->enabley->listFlatGroups(), $scope), 'identifier');
         $inputRg = $request->input('role_groups', []);
         if (! is_array($inputRg)) {
             throw ValidationException::withMessages([
@@ -252,13 +275,13 @@ class EnableyUserController extends Controller
      * @param  list<string>  $roles
      * @return list<string>
      */
-    private function validatedLearnerRoleGroupsOnly(Request $request, array $roles): array
+    private function validatedLearnerRoleGroupsOnly(Request $request, array $roles, EnableyScope $scope): array
     {
         if (! in_array('LEARNER', $roles, true)) {
             return [];
         }
 
-        $validGroupIds = array_column($this->enabley->listFlatGroups(), 'identifier');
+        $validGroupIds = array_column($this->scopeService->filterFlatGroups($this->enabley->listFlatGroups(), $scope), 'identifier');
         $inputRg = $request->input('role_groups', []);
         if (! is_array($inputRg)) {
             throw ValidationException::withMessages([

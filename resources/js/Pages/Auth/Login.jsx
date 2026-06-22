@@ -86,6 +86,7 @@ export default function Login() {
                                                 type="text"
                                                 value={username}
                                                 onChange={(e) => setUsername(e.target.value)}
+                                                placeholder="22806251800"
                                                 className="mt-1.5 w-full rounded-lg border border-slate-400 bg-white px-3 py-2 text-slate-900 shadow-sm placeholder:text-slate-400 focus:border-[#3757A1] focus:outline-none focus:ring-1 focus:ring-[#3757A1]"
                                                 autoComplete="username"
                                             />

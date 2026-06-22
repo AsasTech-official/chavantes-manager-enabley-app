@@ -89,6 +89,9 @@ export default function AppNav() {
         ? auth.user.name || auth.user.username
         : '';
 
+    const isAdmin = auth?.accessMode !== 'manager';
+    const showAdminNav = isAdmin;
+
     const path = String(pageUrl ?? '').split('?')[0] || '';
     const isGrupos = path === '/home';
     const isUsuarios = path === '/usuarios';
@@ -120,9 +123,11 @@ export default function AppNav() {
                             <Link href="/usuarios" className={navTabClass(isUsuarios)}>
                                 Usuários
                             </Link>
-                            <Link href="/importacao" className={navTabClass(isImportacao)}>
-                                Importação
-                            </Link>
+                            {showAdminNav ? (
+                                <Link href="/importacao" className={navTabClass(isImportacao)}>
+                                    Importação
+                                </Link>
+                            ) : null}
                         </nav>
                     </div>
                     <div className="ml-auto hidden md:block" ref={userMenuRef}>
@@ -165,18 +170,20 @@ export default function AppNav() {
                                             </>
                                         ) : null}
                                         <div className="border-t border-slate-100 p-1">
-                                            <button
-                                                type="button"
-                                                onClick={() => {
-                                                    closeUserMenu();
-                                                    setConfigurationModalOpen(true);
-                                                }}
-                                                className="flex w-full cursor-pointer items-center justify-start gap-2 rounded-lg px-3 py-2.5 text-sm font-medium text-slate-700 transition hover:bg-slate-50"
-                                                role="menuitem"
-                                            >
-                                                <Settings className="h-4 w-4 shrink-0" aria-hidden />
-                                                Configurações
-                                            </button>
+                                            {showAdminNav ? (
+                                                <button
+                                                    type="button"
+                                                    onClick={() => {
+                                                        closeUserMenu();
+                                                        setConfigurationModalOpen(true);
+                                                    }}
+                                                    className="flex w-full cursor-pointer items-center justify-start gap-2 rounded-lg px-3 py-2.5 text-sm font-medium text-slate-700 transition hover:bg-slate-50"
+                                                    role="menuitem"
+                                                >
+                                                    <Settings className="h-4 w-4 shrink-0" aria-hidden />
+                                                    Configurações
+                                                </button>
+                                            ) : null}
                                         </div>
                                         <form onSubmit={logout} className="border-t border-slate-100 p-1">
                                             <button
@@ -253,15 +260,17 @@ export default function AppNav() {
                             >
                                 Usuários
                             </Link>
-                            <Link
-                                href="/importacao"
-                                onClick={closeMenu}
-                                className={`cursor-pointer rounded-lg px-3 py-3.5 text-lg font-semibold transition hover:bg-black/[0.04] hover:text-[#EF6F6C] ${
-                                    isImportacao ? 'bg-black/[0.06] text-[#EF6F6C]' : 'text-[#3757A1]'
-                                }`}
-                            >
-                                Importação
-                            </Link>
+                            {showAdminNav ? (
+                                <Link
+                                    href="/importacao"
+                                    onClick={closeMenu}
+                                    className={`cursor-pointer rounded-lg px-3 py-3.5 text-lg font-semibold transition hover:bg-black/[0.04] hover:text-[#EF6F6C] ${
+                                        isImportacao ? 'bg-black/[0.06] text-[#EF6F6C]' : 'text-[#3757A1]'
+                                    }`}
+                                >
+                                    Importação
+                                </Link>
+                            ) : null}
                             {activeSubAccount ? (
                                 <>
                                     <p className="px-3 pt-2 text-[0.7rem] font-semibold uppercase tracking-wide text-slate-500">
@@ -272,17 +281,19 @@ export default function AppNav() {
                                     </p>
                                 </>
                             ) : null}
-                            <button
-                                type="button"
-                                onClick={() => {
-                                    closeMenu();
-                                    setConfigurationModalOpen(true);
-                                }}
-                                className="mt-1 flex w-full cursor-pointer items-center gap-2 rounded-lg px-3 py-2.5 text-left text-sm font-medium text-slate-800 hover:bg-black/[0.04]"
-                            >
-                                <Settings className="h-4 w-4" />
-                                Configurações
-                            </button>
+                            {showAdminNav ? (
+                                <button
+                                    type="button"
+                                    onClick={() => {
+                                        closeMenu();
+                                        setConfigurationModalOpen(true);
+                                    }}
+                                    className="mt-1 flex w-full cursor-pointer items-center gap-2 rounded-lg px-3 py-2.5 text-left text-sm font-medium text-slate-800 hover:bg-black/[0.04]"
+                                >
+                                    <Settings className="h-4 w-4" />
+                                    Configurações
+                                </button>
+                            ) : null}
                         </nav>
                         {auth?.user && (
                             <div className="border-t border-slate-200/80 p-3">
@@ -304,7 +315,7 @@ export default function AppNav() {
             )}
 
             <ConfigurationModal
-                open={configurationModalOpen}
+                open={configurationModalOpen && showAdminNav}
                 onClose={() => setConfigurationModalOpen(false)}
                 hasDefaultUserPassword={Boolean(subContasSettings?.hasDefaultUserPassword)}
                 defaultUserPassword={

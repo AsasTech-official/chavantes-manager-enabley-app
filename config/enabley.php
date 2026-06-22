@@ -26,4 +26,18 @@ return [
     'identifier_prefix' => env('ENABLEY_IDENTIFIER_PREFIX', ''),
     'default_password' => env('ENABLEY_DEFAULT_PASSWORD'),
 
+    /*
+     | Tipos de grupo elegíveis como raiz de escopo MANAGER (gerente por entitlement).
+     | Tipos de membership típicos de aluno (nunca raiz de gerente).
+     */
+    'manager_root_group_types' => array_values(array_filter(array_map(
+        'trim',
+        explode(',', env('ENABLEY_MANAGER_ROOT_GROUP_TYPES', 'UNIDADE,EIXO,REGIONAL,CONTA'))
+    ))),
+
+    'learner_membership_group_types' => array_values(array_filter(array_map(
+        'trim',
+        explode(',', env('ENABLEY_LEARNER_MEMBERSHIP_GROUP_TYPES', 'CARGO,SETOR,TURMA,CURSO'))
+    ))),
+
 ];

@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Models\EnableyUserManagerGroup;
 use App\Support\EnableyContext;
 use Illuminate\Http\Client\PendingRequest;
 use Illuminate\Http\Client\Pool;
@@ -520,6 +521,111 @@ class EnableyApiService
     }
 
     /**
+     * Lista plana de grupos incluindo parentIdentifier (para expansão de subárvore).
+     *
+     * @return list<array{identifier: string, name: string, type: string|null, parentIdentifier: string|null}>
+     */
+    public function listFlatGroupsWithParents(?string $token = null): array
+    {
+        $this->ensureScriptBudgetForEnableyHeavyWork();
+        $token ??= $this->requestToken();
+        $sub = $this->requireSubAccountName();
+        $base = config('enabley.base_url');
+
+        $groupList = $this->enableyPending($token)
+            ->get($base.'/api/v1/groups/list', array_filter(['subAccountName' => $sub]));
+
+        if (! $groupList->successful()) {
+            $this->throwForResponse('Grupos /api/v1/groups/list', $groupList);
+        }
+
+        $raw = $groupList->json();
+        if (! is_array($raw)) {
+            return [];
+        }
+
+        $out = [];
+        foreach ($raw as $g) {
+            if (! is_array($g) || ! isset($g['identifier']) || ! is_string($g['identifier']) || $g['identifier'] === '') {
+                continue;
+            }
+            $name = is_string($g['name'] ?? null) ? $g['name'] : $g['identifier'];
+            $type = $g['type'] ?? null;
+            $parent = $g['parentIdentifier'] ?? null;
+            $out[] = [
+                'identifier' => $g['identifier'],
+                'name' => $name,
+                'type' => is_string($type) ? $type : null,
+                'parentIdentifier' => is_string($parent) && $parent !== '' ? $parent : null,
+            ];
+        }
+
+        return $out;
+    }
+
+    /**
+     * Localiza um utilizador Enabley pelo username exato na subconta ativa.
+     *
+     * @return array<string, mixed>|null
+     */
+    public function findUserByUsername(string $username, ?string $token = null): ?array
+    {
+        $username = trim($username);
+        if ($username === '') {
+            return null;
+        }
+
+        $token ??= $this->requestToken();
+        $sub = $this->requireSubAccountName();
+        $base = config('enabley.base_url');
+        $paginationKey = null;
+
+        for ($i = 0; $i < 500; $i++) {
+            $query = array_filter(
+                [
+                    'subAccountName' => $sub,
+                    'usernameSubstring' => $username,
+                    'paginationKey' => $paginationKey,
+                ],
+                static fn (mixed $v) => $v !== null && $v !== ''
+            );
+
+            $response = $this->enableyPending($token)
+                ->get($base.'/api/v3/users', $query);
+
+            if (! $response->successful()) {
+                $this->throwForResponse('Busca por username GET /api/v3/users', $response);
+            }
+
+            $data = $response->json();
+            if (! is_array($data)) {
+                return null;
+            }
+
+            $items = $data['items'] ?? [];
+            if (is_array($items)) {
+                foreach ($items as $row) {
+                    if (! is_array($row)) {
+                        continue;
+                    }
+                    $rowUsername = $row['username'] ?? null;
+                    if (is_string($rowUsername) && strcasecmp(trim($rowUsername), $username) === 0) {
+                        return $row;
+                    }
+                }
+            }
+
+            $next = $data['paginationKey'] ?? null;
+            if (! is_string($next) || $next === '') {
+                return null;
+            }
+            $paginationKey = $next;
+        }
+
+        return null;
+    }
+
+    /**
      * Associa o utilizador ao grupo (membro; papel de aluno naquele grupo). POST /api/v1/groups/{group}/users/{user}.
      *
      * @param  bool  $replaceAllMappings  Se true, remove outras associações do utilizador a grupos (query replace=true).
@@ -608,12 +714,10 @@ class EnableyApiService
         $response = $this->enableyPending($token)
             ->asJson()
             ->post($base.'/api/v2/users/entitlements', [
-                'entitlement' => [
-                    'userIdentifier' => $userIdentifier,
-                    'entityIdentifier' => $groupIdentifier,
-                    'entityType' => 'GROUP',
-                    'userRole' => $userRole,
-                ],
+                'userIdentifier' => $userIdentifier,
+                'entityIdentifier' => $groupIdentifier,
+                'entityType' => 'GROUP',
+                'userRole' => $userRole,
             ]);
 
         if (! $response->successful()) {
@@ -637,12 +741,10 @@ class EnableyApiService
         $response = $this->enableyPending($token)
             ->asJson()
             ->delete($base.'/api/v2/users/entitlements', [
-                'entitlement' => [
-                    'userIdentifier' => $userIdentifier,
-                    'entityIdentifier' => $groupIdentifier,
-                    'entityType' => 'GROUP',
-                    'userRole' => $userRole,
-                ],
+                'userIdentifier' => $userIdentifier,
+                'entityIdentifier' => $groupIdentifier,
+                'entityType' => 'GROUP',
+                'userRole' => $userRole,
             ]);
 
         if (! $response->successful()) {
@@ -709,6 +811,348 @@ class EnableyApiService
         }
 
         return $sub;
+    }
+
+    /**
+     * Grupos raiz onde o utilizador é gerente (MANAGER explícito na API + cache local de entitlements).
+     *
+     * @param  list<string>  $possibleRoles
+     * @return list<string>
+     */
+    public function listUserManagerRootGroupIds(string $userIdentifier, array $possibleRoles = []): array
+    {
+        $groupsForRoles = $this->listUserRoleGroupsMap($userIdentifier);
+        $explicit = $this->extractExplicitManagerGroupIds($groupsForRoles);
+
+        $persisted = EnableyUserManagerGroup::query()
+            ->where('enabley_user_identifier', $userIdentifier)
+            ->pluck('group_identifier')
+            ->all();
+
+        $merged = array_values(array_unique([...$explicit, ...$persisted]));
+
+        if (in_array('MANAGER', $possibleRoles, true)) {
+            $discovered = $this->discoverManagerEntitlementGroupIds($userIdentifier);
+            if ($discovered !== []) {
+                $merged = array_values(array_unique([...$merged, ...$discovered]));
+                $this->persistUserManagerGroups($userIdentifier, $merged);
+            }
+        }
+
+        return $merged;
+    }
+
+    /**
+     * @param  list<string>  $groupIds
+     */
+    public function persistUserManagerGroups(string $userIdentifier, array $groupIds): void
+    {
+        $groupIds = array_values(array_unique(array_filter($groupIds, fn ($id) => is_string($id) && $id !== '')));
+        if ($groupIds === []) {
+            EnableyUserManagerGroup::query()
+                ->where('enabley_user_identifier', $userIdentifier)
+                ->delete();
+
+            return;
+        }
+
+        EnableyUserManagerGroup::query()
+            ->where('enabley_user_identifier', $userIdentifier)
+            ->whereNotIn('group_identifier', $groupIds)
+            ->delete();
+
+        foreach ($groupIds as $groupId) {
+            EnableyUserManagerGroup::query()->updateOrCreate(
+                [
+                    'enabley_user_identifier' => $userIdentifier,
+                    'group_identifier' => $groupId,
+                ],
+                [],
+            );
+        }
+    }
+
+    public function tryRemoveUserGroupEntitlement(string $userIdentifier, string $groupIdentifier, string $userRole): void
+    {
+        try {
+            $this->removeUserGroupEntitlement($userIdentifier, $groupIdentifier, $userRole);
+        } catch (RuntimeException) {
+            // Enabley devolve 200 mesmo sem entitlement existente; falhas de rede ignoram-se na sondagem.
+        }
+    }
+
+    /**
+     * Enabley não expõe GET de entitlements MANAGER por grupo. Sonda cada UNIDADE candidata
+     * (fora do ramo de membership de aluno) e repõe todos os entitlements detectados.
+     *
+     * @return list<string>
+     */
+    public function discoverManagerEntitlementGroupIds(string $userIdentifier): array
+    {
+        $unidadeCandidates = $this->managerEntitlementUnidadeCandidates($userIdentifier);
+        if ($unidadeCandidates === []) {
+            return [];
+        }
+
+        $discovered = $this->findLiveManagerEntitlementMask($userIdentifier, $unidadeCandidates);
+
+        foreach ($unidadeCandidates as $gid) {
+            $this->tryRemoveUserGroupEntitlement($userIdentifier, $gid, 'MANAGER');
+        }
+        foreach ($discovered as $gid) {
+            try {
+                $this->addUserGroupEntitlement($userIdentifier, $gid, 'MANAGER');
+            } catch (RuntimeException) {
+            }
+        }
+
+        return $discovered;
+    }
+
+    /**
+     * @return list<string>
+     */
+    private function managerEntitlementUnidadeCandidates(string $userIdentifier): array
+    {
+        $groupsForRoles = $this->listUserRoleGroupsMap($userIdentifier);
+        $candidateIds = $this->managerEntitlementCandidateGroupIds($groupsForRoles);
+        if ($candidateIds === []) {
+            return [];
+        }
+
+        $flat = $this->listFlatGroupsWithParents();
+        $flatById = collect($flat)->keyBy('identifier');
+        $memberIds = $this->collectGroupIdsFromRoleMap($groupsForRoles);
+
+        return array_values(array_filter(
+            $candidateIds,
+            function (string $gid) use ($flatById, $memberIds): bool {
+                if (in_array($gid, $memberIds, true)) {
+                    return false;
+                }
+
+                return ($flatById[$gid]['type'] ?? null) === 'UNIDADE';
+            }
+        ));
+    }
+
+    /**
+     * @return list<string>
+     */
+    private function findLiveManagerEntitlementMask(string $userIdentifier, array $universe): array
+    {
+        return $this->multiRoundManagerPeel($userIdentifier, $universe, []);
+    }
+
+    /**
+     * @param  list<string>  $universe
+     * @param  list<string>  $seed
+     * @return list<string>
+     */
+    private function multiRoundManagerPeel(string $userIdentifier, array $universe, array $seed): array
+    {
+        $discovered = array_values(array_unique($seed));
+        $pending = array_values(array_filter(
+            $universe,
+            fn (string $gid) => ! in_array($gid, $discovered, true),
+        ));
+        $flat = $this->listFlatGroupsWithParents();
+        $scopeService = app(EnableyScopeService::class);
+        $maxRounds = count($universe);
+
+        for ($round = 0; $round < $maxRounds; $round++) {
+            if ($pending === []) {
+                break;
+            }
+
+            if (count($pending) === 1 && count($discovered) >= 1) {
+                break;
+            }
+
+            foreach ($universe as $gid) {
+                $this->tryRemoveUserGroupEntitlement($userIdentifier, $gid, 'MANAGER');
+            }
+            foreach ($discovered as $gid) {
+                try {
+                    $this->addUserGroupEntitlement($userIdentifier, $gid, 'MANAGER');
+                } catch (RuntimeException) {
+                }
+            }
+
+            $sortedPending = $this->sortUnidadeCandidatesBySubtreeSize($pending, $scopeService, $flat);
+            $next = null;
+
+            foreach ($sortedPending as $candidateId) {
+                $sizes = [];
+                foreach ($pending as $gid) {
+                    $sizes[$gid] = count($scopeService->expandDescendants([$gid], $flat));
+                }
+                arsort($sizes);
+                $sizeValues = array_values($sizes);
+                if (($sizeValues[0] ?? 0) <= ($sizeValues[1] ?? 0)) {
+                    break;
+                }
+                if (array_key_first($sizes) !== $candidateId) {
+                    continue;
+                }
+                $next = $candidateId;
+                break;
+            }
+
+            if ($next === null) {
+                break;
+            }
+
+            $discovered[] = $next;
+            $pending = array_values(array_filter($pending, fn (string $gid) => $gid !== $next));
+
+            try {
+                $this->addUserGroupEntitlement($userIdentifier, $next, 'MANAGER');
+            } catch (RuntimeException) {
+                array_pop($discovered);
+                break;
+            }
+        }
+
+        return array_values(array_unique($discovered));
+    }
+
+    /**
+     * @param  list<string>  $candidates
+     * @return list<string>
+     */
+    private function sortUnidadeCandidatesBySubtreeSize(array $candidates, EnableyScopeService $scopeService, array $flat): array
+    {
+        usort($candidates, function (string $a, string $b) use ($scopeService, $flat): int {
+            $sizeA = count($scopeService->expandDescendants([$a], $flat));
+            $sizeB = count($scopeService->expandDescendants([$b], $flat));
+
+            return $sizeB <=> $sizeA;
+        });
+
+        return $candidates;
+    }
+
+    /**
+     * @param  array<string, list<array{identifier: string, name: string}>>  $groupsForRoles
+     * @return list<string>
+     */
+    private function extractExplicitManagerGroupIds(array $groupsForRoles): array
+    {
+        $ids = [];
+        foreach ($groupsForRoles['MANAGER'] ?? [] as $entry) {
+            if (! is_array($entry)) {
+                continue;
+            }
+            $gid = $entry['identifier'] ?? null;
+            if (is_string($gid) && $gid !== '') {
+                $ids[$gid] = true;
+            }
+        }
+
+        return array_keys($ids);
+    }
+
+    /**
+     * @param  array<string, list<array{identifier: string, name: string}>>  $groupsForRoles
+     * @return list<string>
+     */
+    private function managerEntitlementCandidateGroupIds(array $groupsForRoles): array
+    {
+        $flatGroups = $this->listFlatGroupsWithParents();
+        $flatById = [];
+        foreach ($flatGroups as $group) {
+            $flatById[$group['identifier']] = $group;
+        }
+
+        $memberIds = $this->collectGroupIdsFromRoleMap($groupsForRoles);
+        $learnerBranchIds = $this->learnerBranchAncestorIds($memberIds, $flatById);
+
+        $managerRootTypes = config('enabley.manager_root_group_types', ['UNIDADE', 'EIXO']);
+        $learnerMembershipTypes = config('enabley.learner_membership_group_types', ['CARGO', 'SETOR', 'TURMA', 'CURSO']);
+
+        $candidates = [];
+        foreach ($flatGroups as $group) {
+            $gid = $group['identifier'] ?? null;
+            $type = $group['type'] ?? null;
+            if (! is_string($gid) || $gid === '' || ! is_string($type) || ! in_array($type, $managerRootTypes, true)) {
+                continue;
+            }
+
+            if (isset($learnerBranchIds[$gid])) {
+                continue;
+            }
+
+            if (in_array($gid, $memberIds, true)) {
+                $memberType = $flatById[$gid]['type'] ?? null;
+                if (is_string($memberType) && in_array($memberType, $learnerMembershipTypes, true)) {
+                    continue;
+                }
+            }
+
+            $candidates[$gid] = true;
+        }
+
+        return array_keys($candidates);
+    }
+
+    /**
+     * @param  list<string>  $memberGroupIds
+     * @param  array<string, array{identifier: string, type: string|null, parentIdentifier: string|null}>  $flatById
+     * @return array<string, true>
+     */
+    private function learnerBranchAncestorIds(array $memberGroupIds, array $flatById): array
+    {
+        $learnerMembershipTypes = config('enabley.learner_membership_group_types', ['CARGO', 'SETOR', 'TURMA', 'CURSO']);
+        $ancestors = [];
+
+        foreach ($memberGroupIds as $memberId) {
+            $member = $flatById[$memberId] ?? null;
+            if (! is_array($member)) {
+                continue;
+            }
+            $memberType = $member['type'] ?? null;
+            if (! is_string($memberType) || ! in_array($memberType, $learnerMembershipTypes, true)) {
+                continue;
+            }
+
+            $current = $memberId;
+            while (isset($flatById[$current])) {
+                $ancestors[$current] = true;
+                $parent = $flatById[$current]['parentIdentifier'] ?? null;
+                if (! is_string($parent) || $parent === '' || ! isset($flatById[$parent])) {
+                    break;
+                }
+                $current = $parent;
+            }
+        }
+
+        return $ancestors;
+    }
+
+    /**
+     * @param  array<string, list<array{identifier: string, name: string}>>  $groupsForRoles
+     * @return list<string>
+     */
+    private function collectGroupIdsFromRoleMap(array $groupsForRoles): array
+    {
+        $ids = [];
+        foreach ($groupsForRoles as $roleGroups) {
+            if (! is_array($roleGroups)) {
+                continue;
+            }
+            foreach ($roleGroups as $entry) {
+                if (! is_array($entry)) {
+                    continue;
+                }
+                $gid = $entry['identifier'] ?? null;
+                if (is_string($gid) && $gid !== '') {
+                    $ids[$gid] = true;
+                }
+            }
+        }
+
+        return array_keys($ids);
     }
 
     /**

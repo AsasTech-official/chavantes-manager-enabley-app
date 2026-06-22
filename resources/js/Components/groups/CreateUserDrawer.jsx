@@ -32,6 +32,7 @@ export default function CreateUserDrawer({
     groupsError = null,
     postUrl = '/usuarios',
     postOptions = {},
+    isManager = false,
 }) {
     const [groupSearchQuery, setGroupSearchQuery] = useState('');
 
@@ -221,25 +222,29 @@ export default function CreateUserDrawer({
                                             ) : null}
                                         </div>
                                     </div>
-                                    <p className="mt-3 rounded-lg border border-[#04385D]/10 bg-[#04385D]/[0.06] px-3 py-2.5 text-xs leading-relaxed text-slate-600">
-                                        A palavra-passe na Plataforma é a{' '}
-                                        <span className="font-medium text-slate-800">senha padrão</span> definida em{' '}
-                                        <span className="font-medium text-slate-800">Configurações</span>.
-                                    </p>
-                                </section>
-
-                                <section>
-                                    <h3 className={sectionTitleClass}>Função na plataforma</h3>
-                                    <div className={`${panelClass} px-3 py-2.5`}>
-                                        <p className="text-sm font-medium text-slate-800">Aluno</p>
-                                        <p className="mt-1 text-xs text-slate-500">
-                                            Apenas contas de aluno podem ser criadas por este formulário.
+                                    {!isManager ? (
+                                        <p className="mt-3 rounded-lg border border-[#04385D]/10 bg-[#04385D]/[0.06] px-3 py-2.5 text-xs leading-relaxed text-slate-600">
+                                            A palavra-passe na Plataforma é a{' '}
+                                            <span className="font-medium text-slate-800">senha padrão</span> definida em{' '}
+                                            <span className="font-medium text-slate-800">Configurações</span>.
                                         </p>
-                                    </div>
-                                    {form.errors.possible_roles ? (
-                                        <p className="mt-2 text-xs text-red-700">{form.errors.possible_roles}</p>
                                     ) : null}
                                 </section>
+
+                                {!isManager ? (
+                                    <section>
+                                        <h3 className={sectionTitleClass}>Função na plataforma</h3>
+                                        <div className={`${panelClass} px-3 py-2.5`}>
+                                            <p className="text-sm font-medium text-slate-800">Aluno</p>
+                                            <p className="mt-1 text-xs text-slate-500">
+                                                Apenas contas de aluno podem ser criadas por este formulário.
+                                            </p>
+                                        </div>
+                                        {form.errors.possible_roles ? (
+                                            <p className="mt-2 text-xs text-red-700">{form.errors.possible_roles}</p>
+                                        ) : null}
+                                    </section>
+                                ) : null}
 
                                 <section className="space-y-3">
                                     <h3 className={sectionTitleClass}>Grupos do aluno</h3>
@@ -366,6 +371,11 @@ export default function CreateUserDrawer({
                                                                                         {g.name}
                                                                                     </span>
                                                                                     {typeLine}
+                                                                                    {g.parentIdentifier ? (
+                                                                                        <span className="ml-1 text-slate-500">
+                                                                                            · Pai: {groups.find(pg => pg.identifier === g.parentIdentifier)?.name ?? g.parentIdentifier}
+                                                                                        </span>
+                                                                                    ) : null}
                                                                                     <span className="mt-1 block font-mono text-[11px] leading-snug text-slate-500 break-all">
                                                                                         {gid}
                                                                                     </span>
@@ -406,7 +416,7 @@ export default function CreateUserDrawer({
                                 className="flex-1 cursor-pointer rounded-xl bg-[#04385D] px-4 py-3 text-sm font-semibold text-[#F2F2E9] shadow-md transition hover:bg-[#205E8A] disabled:opacity-60"
                                 disabled={form.processing}
                             >
-                                {form.processing ? 'A criar…' : 'Criar usuário'}
+                                {form.processing ? 'Criando…' : 'Criar usuário'}
                             </button>
                         </div>
                     </form>

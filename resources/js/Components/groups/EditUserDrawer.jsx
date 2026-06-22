@@ -334,6 +334,11 @@ export default function EditUserDrawer({ open, onClose, user, form, groups = [],
                                                                                     {g.name}
                                                                                 </span>
                                                                                 {typeLine}
+                                                                                {g.parentIdentifier ? (
+                                                                                    <span className="ml-1 text-slate-500">
+                                                                                        · Pai: {groups.find(pg => pg.identifier === g.parentIdentifier)?.name ?? g.parentIdentifier}
+                                                                                    </span>
+                                                                                ) : null}
                                                                                 <span className="mt-1 block font-mono text-[11px] leading-snug text-slate-500 break-all">
                                                                                     {gid}
                                                                                 </span>
