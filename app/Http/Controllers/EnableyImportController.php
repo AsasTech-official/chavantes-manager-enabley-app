@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Models\IntegrationSetting;
 use App\Services\EnableyApiService;
+use App\Services\EnableyScopeService;
+use App\Support\EnableyScopeContext;
 use DateInterval;
 use DateTimeInterface;
 use Illuminate\Http\RedirectResponse;
@@ -26,6 +28,7 @@ class EnableyImportController extends Controller
 
     public function __construct(
         private EnableyApiService $enabley,
+        private EnableyScopeService $scopeService,
     ) {}
 
     public function index(): Response
@@ -113,8 +116,10 @@ class EnableyImportController extends Controller
             return redirect()->route('importacao')->with('error', 'Máximo de '.self::MAX_DATA_ROWS.' linhas por ficheiro.');
         }
 
+        $scope = EnableyScopeContext::current();
+
         try {
-            $flat = $this->enabley->listFlatGroups();
+            $flat = $this->scopeService->filterFlatGroups($this->enabley->listFlatGroups(), $scope);
         } catch (Throwable $e) {
             return redirect()->route('importacao')->with('error', $e->getMessage());
         }

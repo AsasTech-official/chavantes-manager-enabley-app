@@ -91,6 +91,7 @@ export default function AppNav() {
 
     const isAdmin = auth?.accessMode !== 'manager';
     const showAdminNav = isAdmin;
+    const canImport = Boolean(auth?.user);
 
     const path = String(pageUrl ?? '').split('?')[0] || '';
     const isGrupos = path === '/home';
@@ -123,7 +124,7 @@ export default function AppNav() {
                             <Link href="/usuarios" className={navTabClass(isUsuarios)}>
                                 Usuários
                             </Link>
-                            {showAdminNav ? (
+                            {canImport ? (
                                 <Link href="/importacao" className={navTabClass(isImportacao)}>
                                     Importação
                                 </Link>
@@ -260,7 +261,7 @@ export default function AppNav() {
                             >
                                 Usuários
                             </Link>
-                            {showAdminNav ? (
+                            {canImport ? (
                                 <Link
                                     href="/importacao"
                                     onClick={closeMenu}
