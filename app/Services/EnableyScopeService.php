@@ -180,7 +180,7 @@ class EnableyScopeService
             }
         }
 
-        return array_keys($ids);
+        return array_map('strval', array_keys($ids));
     }
 
     /**
@@ -207,7 +207,7 @@ class EnableyScopeService
             }
         }
 
-        return array_keys($ids);
+        return array_map('strval', array_keys($ids));
     }
 
     /**
@@ -245,7 +245,7 @@ class EnableyScopeService
             }
         }
 
-        return array_keys($allowed);
+        return array_map('strval', array_keys($allowed));
     }
 
     /**

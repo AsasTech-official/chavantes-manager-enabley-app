@@ -1050,7 +1050,7 @@ class EnableyApiService
             }
         }
 
-        return array_keys($ids);
+        return array_map('strval', array_keys($ids));
     }
 
     /**
@@ -1093,7 +1093,7 @@ class EnableyApiService
             $candidates[$gid] = true;
         }
 
-        return array_keys($candidates);
+        return array_map('strval', array_keys($candidates));
     }
 
     /**
@@ -1152,7 +1152,7 @@ class EnableyApiService
             }
         }
 
-        return array_keys($ids);
+        return array_map('strval', array_keys($ids));
     }
 
     /**

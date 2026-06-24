@@ -109,6 +109,8 @@ final class EnableyScope
         foreach ($value as $item) {
             if (is_string($item) && $item !== '') {
                 $out[] = $item;
+            } elseif (is_int($item)) {
+                $out[] = (string) $item;
             }
         }
 
