@@ -86,7 +86,7 @@ export default function Login() {
                                                 type="text"
                                                 value={username}
                                                 onChange={(e) => setUsername(e.target.value.replace(/\D/g, ""))}
-                                                placeholder="CPF"
+                                                placeholder="Digite o seu usuário"
                                                 className="mt-1.5 w-full rounded-lg border border-slate-400 bg-white px-3 py-2 text-slate-900 shadow-sm placeholder:text-slate-400 focus:border-[#3757A1] focus:outline-none focus:ring-1 focus:ring-[#3757A1]"
                                                 autoComplete="username"
                                             />
@@ -105,6 +105,7 @@ export default function Login() {
                                                     type={showPassword ? 'text' : 'password'}
                                                     value={password}
                                                     onChange={(e) => setPassword(e.target.value)}
+                                                    placeholder="Digite a sua senha"
                                                     className="w-full rounded-lg border border-slate-400 bg-white py-2 pl-3 pr-11 text-slate-900 shadow-sm focus:border-[#3757A1] focus:outline-none focus:ring-1 focus:ring-[#3757A1]"
                                                     autoComplete="current-password"
                                                 />

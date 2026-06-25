@@ -15,6 +15,9 @@ return new class extends Migration
             $table->id();
             $table->string('username')->unique();
             $table->string('name');
+            $table->string('role', 20)->default('admin');
+            $table->string('enabley_username')->nullable();
+            $table->string('enabley_identifier')->nullable();
             $table->string('password');
             $table->rememberToken();
             $table->timestamps();

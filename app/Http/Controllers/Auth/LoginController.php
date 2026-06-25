@@ -72,16 +72,19 @@ class LoginController extends Controller
         $request->session()->regenerate();
 
         if ($request->expectsJson()) {
-            $redirect = $request->session()->pull('url.intended', route('home'));
             $user = $result['user'];
+            $defaultRoute = $user->role === 'admin' ? route('gerentes.index') : route('home');
+            $redirect = $request->session()->pull('url.intended', $defaultRoute);
 
             return response()->json([
-                'user' => $user->only('id', 'username', 'name', 'access_mode', 'enabley_username', 'enabley_identifier'),
+                'user' => $user->only('id', 'username', 'name', 'role', 'enabley_username', 'enabley_identifier'),
                 'redirect' => $redirect,
             ]);
         }
 
-        return redirect()->intended(route('home'));
+        $user = $result['user'] ?? Auth::user();
+        $defaultRoute = $user && $user->role === 'admin' ? route('gerentes.index') : route('home');
+        return redirect()->intended($defaultRoute);
     }
 
     public function destroy(Request $request): JsonResponse|RedirectResponse

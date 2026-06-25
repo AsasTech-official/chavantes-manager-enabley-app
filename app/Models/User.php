@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Attributes\Hidden;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
-#[Fillable(['username', 'name', 'password', 'access_mode', 'enabley_username', 'enabley_identifier'])]
+#[Fillable(['username', 'name', 'password', 'role', 'enabley_username', 'enabley_identifier'])]
 #[Hidden(['password', 'remember_token'])]
 class User extends Authenticatable
 {
@@ -23,5 +23,10 @@ class User extends Authenticatable
         return [
             'password' => 'hashed',
         ];
+    }
+
+    public function groups()
+    {
+        return $this->hasMany(EnableyUserManagerGroup::class);
     }
 }

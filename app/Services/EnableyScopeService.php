@@ -116,52 +116,27 @@ class EnableyScopeService
         );
     }
 
-    /**
-     * @param  array<string, mixed>  $enableyUser
-     */
-    public function resolveForEnableyUser(array $enableyUser): EnableyScope
+    public function resolveForLocalManager(\App\Models\User $user): EnableyScope
     {
-        $identifier = $enableyUser['identifier'] ?? null;
-        $username = $enableyUser['username'] ?? null;
-        if (! is_string($identifier) || $identifier === '' || ! is_string($username) || trim($username) === '') {
-            throw new RuntimeException(__('auth.failed'));
+        $managedRoots = $user->groups()->pluck('group_identifier')->unique()->filter()->values()->all();
+
+        if ($managedRoots === []) {
+            throw new RuntimeException('Você não possui nenhum grupo atribuído. Fale com o administrador.');
         }
 
-        $username = trim($username);
+        $flatGroups = $this->enabley->listFlatGroupsWithParents();
+        $scopeIds = $this->expandDescendants($managedRoots, $flatGroups);
 
-        if ($this->hasFullAccessRole($enableyUser)) {
-            return new EnableyScope(
-                accessMode: 'admin',
-                enableyUsername: $username,
-                enableyIdentifier: $identifier,
-            );
-        }
-
-        return $this->resolveForManager(
-            $identifier,
-            $username,
-            is_array($enableyUser['possibleRoles'] ?? null) ? $enableyUser['possibleRoles'] : [],
+        return new EnableyScope(
+            accessMode: 'manager',
+            enableyUsername: $user->enabley_username,
+            enableyIdentifier: $user->enabley_identifier,
+            managedRootGroupIds: $managedRoots,
+            scopeGroupIds: $scopeIds,
         );
     }
 
-    /**
-     * @param  array<string, mixed>  $enableyUser
-     */
-    private function hasFullAccessRole(array $enableyUser): bool
-    {
-        $roles = $enableyUser['possibleRoles'] ?? [];
-        if (! is_array($roles)) {
-            return false;
-        }
 
-        foreach (['SITE_ADMIN', 'ACCOUNT_ADMIN'] as $adminRole) {
-            if (in_array($adminRole, $roles, true)) {
-                return true;
-            }
-        }
-
-        return false;
-    }
 
     /**
      * @param  array<string, list<array{identifier: string, name: string}>>  $groupsForRoles

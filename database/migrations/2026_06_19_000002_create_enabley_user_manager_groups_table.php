@@ -10,12 +10,12 @@ return new class extends Migration
     {
         Schema::create('enabley_user_manager_groups', function (Blueprint $table) {
             $table->id();
-            $table->string('enabley_user_identifier');
+            $table->foreignId('user_id')->constrained('users')->cascadeOnDelete();
             $table->string('group_identifier');
+            $table->string('group_name', 500)->nullable();
             $table->timestamps();
 
-            $table->unique(['enabley_user_identifier', 'group_identifier']);
-            $table->index('enabley_user_identifier');
+            $table->unique(['user_id', 'group_identifier']);
         });
     }
 

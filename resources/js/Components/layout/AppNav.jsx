@@ -129,6 +129,11 @@ export default function AppNav() {
                                     Importação
                                 </Link>
                             ) : null}
+                            {showAdminNav ? (
+                                <Link href="/gerentes" className={navTabClass(path === '/gerentes')}>
+                                    Gerentes
+                                </Link>
+                            ) : null}
                         </nav>
                     </div>
                     <div className="ml-auto hidden md:block" ref={userMenuRef}>
@@ -270,6 +275,17 @@ export default function AppNav() {
                                     }`}
                                 >
                                     Importação
+                                </Link>
+                            ) : null}
+                            {showAdminNav ? (
+                                <Link
+                                    href="/gerentes"
+                                    onClick={closeMenu}
+                                    className={`cursor-pointer rounded-lg px-3 py-3.5 text-lg font-semibold transition hover:bg-black/[0.04] hover:text-[#EF6F6C] ${
+                                        path === '/gerentes' ? 'bg-black/[0.06] text-[#EF6F6C]' : 'text-[#3757A1]'
+                                    }`}
+                                >
+                                    Gerentes
                                 </Link>
                             ) : null}
                             {activeSubAccount ? (
