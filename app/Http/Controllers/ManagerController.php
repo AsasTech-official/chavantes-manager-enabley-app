@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\User;
 use App\Models\EnableyUserManagerGroup;
+use App\Models\Log;
 use App\Services\EnableyApiService;
 use App\Services\EnableyScopeService;
 use App\Support\EnableyScopeContext;
@@ -95,6 +96,12 @@ class ManagerController extends Controller
             'must_change_password' => true,
         ]);
 
+        Log::create([
+            'user_id' => auth()->id(),
+            'action' => 'manager_created',
+            'description' => "Criou o gerente: {$user->username}",
+        ]);
+
         return redirect()->back()->with('success', 'Gerente criado com sucesso.');
     }
 
@@ -125,6 +132,12 @@ class ManagerController extends Controller
 
         $manager->save();
 
+        Log::create([
+            'user_id' => auth()->id(),
+            'action' => 'manager_updated',
+            'description' => "Atualizou o gerente: {$manager->username}",
+        ]);
+
         return redirect()->back()->with('success', 'Gerente atualizado com sucesso.');
     }
 
@@ -138,6 +151,12 @@ class ManagerController extends Controller
         }
 
         $manager->delete();
+
+        Log::create([
+            'user_id' => auth()->id(),
+            'action' => 'manager_deleted',
+            'description' => "Excluiu o gerente: {$manager->username}",
+        ]);
 
         return response()->json([
             'message' => 'Gerente excluído com sucesso.',
@@ -172,6 +191,12 @@ class ManagerController extends Controller
         if (!empty($newAssignments)) {
             $manager->groups()->createMany($newAssignments);
         }
+
+        Log::create([
+            'user_id' => auth()->id(),
+            'action' => 'manager_groups_updated',
+            'description' => "Atualizou grupos do gerente: {$manager->username}",
+        ]);
 
         return response()->json([
             'message' => 'Grupos atualizados com sucesso.',

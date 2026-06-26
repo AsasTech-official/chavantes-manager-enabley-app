@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\IntegrationSetting;
+use App\Models\Log;
 use App\Services\EnableyApiService;
 use App\Services\EnableyScopeService;
 use App\Support\EnableyScopeContext;
@@ -211,6 +212,14 @@ class EnableyImportController extends Controller
         $summary = $fail === 0
             ? "Usuários: {$ok} criados."
             : "Usuários: {$ok} criados, {$fail} falharam (ver detalhes abaixo).";
+
+        if ($ok > 0) {
+            Log::create([
+                'user_id' => auth()->id(),
+                'action' => 'users_imported',
+                'description' => "Importou via Excel: {$ok} sucessos, {$fail} falhas.",
+            ]);
+        }
 
         return redirect()->route('import.index')
             ->with('success', $summary)

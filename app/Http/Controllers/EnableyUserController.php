@@ -2,8 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Controllers\Controller;
 use App\Models\EnableyUserManagerGroup;
 use App\Models\IntegrationSetting;
+use App\Models\Log;
 use App\Services\EnableyApiService;
 use App\Services\EnableyScopeService;
 use App\Support\EnableyScope;
@@ -127,6 +129,12 @@ class EnableyUserController extends Controller
             return redirect()->route('users.index')->with('error', $e->getMessage());
         }
 
+        Log::create([
+            'user_id' => auth()->id(),
+            'action' => 'user_created',
+            'description' => "Criou o usuário enabley: {$data['username']} (Identificador: {$userId})",
+        ]);
+
         return redirect()->route('users.index')->with('success', 'Usuário criado.');
     }
 
@@ -205,6 +213,16 @@ class EnableyUserController extends Controller
             $data['is_active'] && $statusOnly => 'Usuário ativado.',
             default => 'Usuário atualizado.',
         };
+
+        Log::create([
+            'user_id' => auth()->id(),
+            'action' => match (true) {
+                ! $data['is_active'] => 'user_deactivated',
+                $data['is_active'] && $statusOnly => 'user_activated',
+                default => 'user_updated',
+            },
+            'description' => "Atualizou o usuário enabley identificador {$identifier}: {$message}",
+        ]);
 
         return redirect()->route('users.index')->with('success', $message);
     }
