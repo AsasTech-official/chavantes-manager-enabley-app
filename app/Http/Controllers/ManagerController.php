@@ -92,6 +92,7 @@ class ManagerController extends Controller
             'username' => trim($validated['username']),
             'password' => Hash::make($passwordToUse),
             'role' => 'manager',
+            'must_change_password' => true,
         ]);
 
         return redirect()->back()->with('success', 'Gerente criado com sucesso.');

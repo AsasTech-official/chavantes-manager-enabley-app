@@ -51,7 +51,7 @@ class EnableyImportController extends Controller
     {
         return [
             ['first_name', 'last_name', 'username', 'email', 'learner_groups'],
-            ['MARIA', 'SILVA', 'maria.silva', 'maria@exemplo.com', ''],
+            ['MARIA', 'SILVA', '12345678909', 'maria@exemplo.com', 'Maternal, Berçário'],
         ];
     }
 
@@ -123,7 +123,18 @@ class EnableyImportController extends Controller
         } catch (Throwable $e) {
             return redirect()->route('importacao')->with('error', $e->getMessage());
         }
-        $validGroupIds = array_fill_keys(array_column($flat, 'identifier'), true);
+        $validGroupIds = [];
+        $validGroupNames = [];
+        foreach ($flat as $g) {
+            $id = $g['identifier'] ?? null;
+            $name = $g['name'] ?? null;
+            if ($id !== null && $id !== '') {
+                $validGroupIds[$id] = $id;
+                if ($name !== null && $name !== '') {
+                    $validGroupNames[mb_strtolower(trim($name), 'UTF-8')] = $id;
+                }
+            }
+        }
 
         /** @var string $password */
         $password = $settings->defaultUserPassword();
@@ -152,13 +163,20 @@ class EnableyImportController extends Controller
                 continue;
             }
 
-            $groupIds = $this->parseCommaSeparatedIds($r['learner_groups'] ?? '');
-            foreach ($groupIds as $gid) {
-                if (! isset($validGroupIds[$gid])) {
-                    $fail++;
-                    $details[] = ['line' => $lineNum, 'status' => 'error', 'message' => 'Identificador de grupo inválido em learner_groups: '.$gid];
-
-                    continue 2;
+            $groupIdsRaw = $this->parseCommaSeparatedIds($r['learner_groups'] ?? '');
+            $groupIds = [];
+            foreach ($groupIdsRaw as $val) {
+                if (isset($validGroupIds[$val])) {
+                    $groupIds[] = $validGroupIds[$val];
+                } else {
+                    $nameKey = mb_strtolower($val, 'UTF-8');
+                    if (isset($validGroupNames[$nameKey])) {
+                        $groupIds[] = $validGroupNames[$nameKey];
+                    } else {
+                        $fail++;
+                        $details[] = ['line' => $lineNum, 'status' => 'error', 'message' => 'Grupo não encontrado (ID ou Nome inválido): '.$val];
+                        continue 2;
+                    }
                 }
             }
 

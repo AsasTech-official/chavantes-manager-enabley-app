@@ -216,7 +216,7 @@ export default function GroupUsersTable({
                 variant={variant}
             >
                         <table className="w-full min-w-max text-left text-sm text-slate-800">
-                            <thead className="sticky top-0 z-[1] border-b border-slate-200 bg-[#04385D]/95 text-xs font-semibold uppercase tracking-wide text-[#F2F2E9] backdrop-blur-sm">
+                            <thead className="sticky top-0 z-[1] border-b border-slate-200 bg-[#04385D]/95 text-xs font-semibold uppercase tracking-wide text-white backdrop-blur-sm">
                                 <tr>
                                     {columnKeys.map((key) => (
                                         <th

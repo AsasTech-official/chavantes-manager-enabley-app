@@ -402,7 +402,7 @@ export default function CreateUserDrawer({
                             </div>
                         </div>
 
-                        <div className="flex shrink-0 gap-3 border-t border-slate-200/90 bg-[#F2F2E9]/95 px-6 py-4 backdrop-blur-sm">
+                        <div className="flex shrink-0 gap-3 border-t border-slate-200/90 bg-white/95 px-6 py-4 backdrop-blur-sm">
                             <button
                                 type="button"
                                 onClick={onClose}

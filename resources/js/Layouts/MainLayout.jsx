@@ -1,10 +1,16 @@
+import { usePage } from '@inertiajs/react';
 import { ToastContainer } from 'react-toastify';
 import { FlashToasts } from '@/Components/layout';
+import ForceChangePasswordModal from '@/Components/auth/ForceChangePasswordModal';
 
 export default function MainLayout({ children }) {
+    const { auth } = usePage().props;
+    const user = auth?.user;
+
     return (
         <>
             <FlashToasts />
+            {user?.must_change_password && <ForceChangePasswordModal isOpen={true} />}
             {children}
             <ToastContainer
                 position="bottom-right"

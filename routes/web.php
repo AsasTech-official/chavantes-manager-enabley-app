@@ -29,6 +29,8 @@ Route::middleware('guest')->group(function () {
 Route::post('logout', [LoginController::class, 'destroy'])->middleware('auth')->name('logout');
 
 Route::middleware('auth')->group(function () {
+    Route::put('/password/change', [\App\Http\Controllers\PasswordChangeController::class, 'update'])->name('password.change');
+
     Route::get('/home', HomeController::class)->name('home');
     Route::get('/usuarios', UsersController::class)->name('usuarios');
     Route::post('/usuarios', [EnableyUserController::class, 'store'])->name('usuarios.store');

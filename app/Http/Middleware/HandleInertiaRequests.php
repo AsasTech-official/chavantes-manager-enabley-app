@@ -47,7 +47,7 @@ class HandleInertiaRequests extends Middleware
             ],
             'auth' => [
                 'user' => $request->user()
-                    ? $request->user()->only('id', 'username', 'name', 'role', 'enabley_username', 'enabley_identifier')
+                    ? $request->user()->only('id', 'username', 'name', 'role', 'enabley_username', 'enabley_identifier', 'must_change_password')
                     : null,
                 'accessMode' => $request->user()
                     ? EnableyScopeContext::current()->accessMode

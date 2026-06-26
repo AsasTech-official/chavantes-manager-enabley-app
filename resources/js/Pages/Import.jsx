@@ -129,8 +129,7 @@ export default function Import() {
                                             <strong>Opcional:</strong> <Kbd>email</Kbd> — válido, se preenchido.
                                         </li>
                                         <li>
-                                            <strong>Opcional:</strong> <Kbd>learner_groups</Kbd> — um ou vários UUIDs de grupos da
-                                            subconta, separados por <strong>vírgula</strong> ou <strong>ponto e vírgula</strong>.
+                                            <strong>Opcional:</strong> <Kbd>learner_groups</Kbd> — um ou vários Nomes de grupos da subconta, separados por <strong>vírgula</strong> ou <strong>ponto e vírgula</strong>.
                                         </li>
                                     </ul>
                                 </div>
