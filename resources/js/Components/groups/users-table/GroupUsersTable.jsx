@@ -1,9 +1,9 @@
 import { useCallback, useEffect, useId, useMemo, useState } from 'react';
 import { router } from '@inertiajs/react';
-import { ChevronLeft, ChevronRight, Eye, MoreHorizontal, Search } from 'lucide-react';
-import RoleGroupsModal from '../RoleGroupsModal';
+import { Eye, MoreHorizontal } from 'lucide-react';
+import RoleGroupsModal from '@/Components/groups/RoleGroupsModal';
+import DataTableLayout, { PAGE_SIZE_ALL } from '@/Components/ui/DataTableLayout';
 import {
-    PAGE_SIZE_ALL,
     PAGE_SIZES,
     USERS_BUSCA_QUERY,
     IS_ACTIVE_STATUS_KEYS,
@@ -56,26 +56,6 @@ function computeActionsMenuPosition(triggerRect) {
 
 const CELL_MAX_W = 'max-w-[min(24rem,40vw)]';
 
-const PAGINATION_NAV_BTN_CLASS =
-    'inline-flex cursor-pointer items-center gap-1 rounded-lg border border-slate-200 bg-white px-2.5 py-1.5 text-xs font-medium text-slate-700 shadow-sm transition hover:border-[#04385D]/30 hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-40';
-
-/**
- * Tabela de usuários Enabley (colunas dinâmicas, filtro, paginação).
- * @param {object} props
- * @param {unknown[]} props.users
- * @param {string|number} [props.resetKey] — ao mudar, repõe filtro e página
- * @param {'modal'|'page'} [props.variant='page']
- * @param {string} [props.emptyListMessage]
- * @param {string} [props.searchPlaceholder]
- * @param {string} [props.initialSearchQuery] — na variante `page`, sincroniza com `?busca=` na URL
- * @param {boolean} [props.showViewInUsersAction] — coluna com olho: abre a página Usuários filtrada por identificador
- * @param {boolean} [props.showUserMaintenanceActions] — coluna «Ações»: editar e inativar (página Usuários)
- * @param {(user: object) => void} [props.onEditUser]
- * @param {(user: object) => void} [props.onDeactivateUser]
- * @param {(user: object) => void} [props.onActivateUser]
- * @param {() => void} [props.onBeforeNavigateToUsers] — ex.: fechar o modal antes do `router.get`
- * @param {(s: { searchQuery: string; filteredCount: number; totalCount: number }) => void} [props.onTableStatsChange]
- */
 export default function GroupUsersTable({
     users,
     resetKey,
@@ -98,9 +78,6 @@ export default function GroupUsersTable({
     const [roleGroupsModal, setRoleGroupsModal] = useState(null);
     /** Menu de manutenção: um único painel `fixed` (detalhes na tabela sobrepoem linhas). */
     const [actionsMenu, setActionsMenu] = useState(null);
-    const baseId = useId();
-    const searchId = `${baseId}-search`;
-    const pageSizeId = `${baseId}-page-size`;
 
     useEffect(() => {
         setPageSize(25);
@@ -138,10 +115,6 @@ export default function GroupUsersTable({
     const safePage = Math.min(page, totalPages);
     const startIdx = (safePage - 1) * effectivePageSize;
     const pageRows = filtered.slice(startIdx, startIdx + effectivePageSize);
-    const rangeEnd =
-        filtered.length === 0
-            ? 0
-            : Math.min(startIdx + pageRows.length, filtered.length);
 
     useEffect(() => {
         if (page !== safePage) {
@@ -181,15 +154,6 @@ export default function GroupUsersTable({
         };
     }, [actionsMenu]);
 
-    const rootClass =
-        variant === 'modal'
-            ? 'flex min-h-0 flex-1 flex-col gap-3'
-            : 'mt-4 flex flex-col gap-3';
-    const scrollClass =
-        variant === 'modal'
-            ? 'min-h-0 flex-1 overflow-auto rounded-lg border border-slate-200 bg-white shadow-sm'
-            : 'max-h-[min(70vh,960px)] overflow-auto rounded-lg border border-slate-200 bg-white shadow-sm';
-
     const goToUsersFiltered = (u) => {
         const id = u?.identifier;
         if (id == null || String(id).trim() === '') {
@@ -205,7 +169,6 @@ export default function GroupUsersTable({
         if (sid === '') {
             return;
         }
-        // Medir o gatilho aqui: dentro do updater do setState o `currentTarget` do evento pode já ser null.
         const trigger = e.currentTarget;
         if (!trigger || typeof trigger.getBoundingClientRect !== 'function') {
             return;
@@ -238,65 +201,20 @@ export default function GroupUsersTable({
     }
 
     return (
-        <div className={rootClass}>
-            <div className="flex shrink-0 flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-                <label
-                    htmlFor={searchId}
-                    className="relative block min-w-0 flex-1 sm:max-w-md"
-                >
-                    <Search
-                        className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[#04385D]/60"
-                        strokeWidth={2}
-                        aria-hidden
-                    />
-                    <input
-                        id={searchId}
-                        type="search"
-                        value={searchQuery}
-                        onChange={(e) => setSearchQuery(e.target.value)}
-                        placeholder={searchPlaceholder}
-                        className="w-full rounded-lg border border-slate-200 bg-white py-2 pl-10 pr-3 text-sm text-slate-800 shadow-sm outline-none ring-[#04385D]/20 transition placeholder:text-slate-400 focus:border-[#04385D]/40 focus:ring-2"
-                        autoComplete="off"
-                    />
-                </label>
-                <div className="flex shrink-0 items-center gap-2">
-                    <label
-                        htmlFor={pageSizeId}
-                        className="text-xs font-medium text-slate-600"
-                    >
-                        Por página
-                    </label>
-                    <select
-                        id={pageSizeId}
-                        value={
-                            pageSize === PAGE_SIZE_ALL
-                                ? PAGE_SIZE_ALL
-                                : String(pageSize)
-                        }
-                        onChange={(e) => {
-                            const v = e.target.value;
-                            setPageSize(
-                                v === PAGE_SIZE_ALL ? PAGE_SIZE_ALL : Number(v),
-                            );
-                        }}
-                        className="cursor-pointer rounded-lg border border-slate-200 bg-white px-2.5 py-2 text-sm font-medium text-slate-800 shadow-sm outline-none ring-[#04385D]/20 focus:ring-2"
-                    >
-                        {PAGE_SIZES.map((n) => (
-                            <option key={n} value={String(n)}>
-                                {n}
-                            </option>
-                        ))}
-                        <option value={PAGE_SIZE_ALL}>Todos</option>
-                    </select>
-                </div>
-            </div>
-            {filtered.length === 0 ? (
-                <p className="py-8 text-center text-sm text-slate-600">
-                    Nenhum resultado para &ldquo;{searchQuery.trim()}&rdquo;.
-                </p>
-            ) : (
-                <>
-                    <div className={scrollClass}>
+        <>
+            <DataTableLayout
+                searchQuery={searchQuery}
+                onSearchChange={setSearchQuery}
+                searchPlaceholder={searchPlaceholder}
+                pageSize={pageSize}
+                onPageSizeChange={setPageSize}
+                page={page}
+                onPageChange={setPage}
+                totalItems={list.length}
+                filteredItemsCount={filtered.length}
+                emptyMessage={emptyListMessage}
+                variant={variant}
+            >
                         <table className="w-full min-w-max text-left text-sm text-slate-800">
                             <thead className="sticky top-0 z-[1] border-b border-slate-200 bg-[#04385D]/95 text-xs font-semibold uppercase tracking-wide text-[#F2F2E9] backdrop-blur-sm">
                                 <tr>
@@ -486,44 +404,7 @@ export default function GroupUsersTable({
                                 })}
                             </tbody>
                         </table>
-                    </div>
-                    <div className="flex shrink-0 flex-col gap-2 border-t border-slate-200/80 pt-3 sm:flex-row sm:items-center sm:justify-between">
-                        <p className="text-xs text-slate-600">
-                            {`${startIdx + 1}–${rangeEnd} de ${filtered.length}`}
-                            <span className="text-slate-400">
-                                {' '}
-                                · Página {safePage} de {totalPages}
-                            </span>
-                        </p>
-                        <div className="flex items-center gap-2">
-                            <button
-                                type="button"
-                                onClick={() =>
-                                    setPage((p) => Math.max(1, p - 1))
-                                }
-                                disabled={safePage <= 1}
-                                className={PAGINATION_NAV_BTN_CLASS}
-                                aria-label="Página anterior"
-                            >
-                                <ChevronLeft className="h-4 w-4" aria-hidden />
-                                Anterior
-                            </button>
-                            <button
-                                type="button"
-                                onClick={() =>
-                                    setPage((p) => Math.min(totalPages, p + 1))
-                                }
-                                disabled={safePage >= totalPages}
-                                className={PAGINATION_NAV_BTN_CLASS}
-                                aria-label="Página seguinte"
-                            >
-                                Seguinte
-                                <ChevronRight className="h-4 w-4" aria-hidden />
-                            </button>
-                        </div>
-                    </div>
-                </>
-            )}
+        </DataTableLayout>
             {actionsMenu && showUserMaintenanceActions ? (
                 <>
                     <div
@@ -588,6 +469,6 @@ export default function GroupUsersTable({
                 subtitle={roleGroupsModal?.subtitle}
                 emptyMessage={roleGroupsModal?.emptyMessage}
             />
-        </div>
+        </>
     );
 }

@@ -60,42 +60,47 @@ class ManagerController extends Controller
         return inertia('Managers/Index', [
             'managers' => $managers,
             'groups' => $groups,
+            'hasDefaultUserPassword' => \App\Models\IntegrationSetting::current()->hasDefaultUserPassword(),
         ]);
     }
 
     /**
      * Cria um novo gerente localmente.
      */
-    public function store(Request $request): JsonResponse
+    public function store(Request $request)
     {
+        $settings = \App\Models\IntegrationSetting::current();
+        if (! $settings->hasDefaultUserPassword()) {
+            return redirect()->route('gerentes.index')->with(
+                'error',
+                'Defina a senha padrão no Centro de configuração antes de criar gerentes.',
+            );
+        }
+
         $validated = $request->validate([
             'name' => ['required', 'string', 'max:255'],
             'username' => ['required', 'string', 'max:255', 'unique:users,username'],
-            'password' => ['required', 'string', 'min:6'],
+            'password' => ['nullable', 'string', 'min:6'],
         ]);
+
+        $passwordToUse = !empty($validated['password']) 
+            ? $validated['password'] 
+            : $settings->defaultUserPassword();
 
         $user = User::create([
             'name' => trim($validated['name']),
             'username' => trim($validated['username']),
-            'password' => Hash::make($validated['password']),
+            'password' => Hash::make($passwordToUse),
             'role' => 'manager',
         ]);
 
-        return response()->json([
-            'message' => 'Gerente criado com sucesso.',
-            'manager' => [
-                'id' => $user->id,
-                'name' => $user->name,
-                'username' => $user->username,
-                'groups' => [],
-            ],
-        ], 201);
+        return redirect()->back()->with('success', 'Gerente criado com sucesso.');
     }
 
     /**
      * Atualiza dados de um gerente.
      */
-    public function update(Request $request, User $manager): JsonResponse
+    public function update(Request $request, User $manager)
     {
         if ($manager->role !== 'manager') {
             abort(403);
@@ -119,9 +124,7 @@ class ManagerController extends Controller
 
         $manager->save();
 
-        return response()->json([
-            'message' => 'Gerente atualizado com sucesso.',
-        ]);
+        return redirect()->back()->with('success', 'Gerente atualizado com sucesso.');
     }
 
     /**
