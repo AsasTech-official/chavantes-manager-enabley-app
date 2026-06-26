@@ -42,7 +42,7 @@ class UsersController extends Controller
             $groupsError = $e->getMessage();
         }
 
-        return Inertia::render('Users', [
+        return Inertia::render('Users/Index', [
             'enableyUsers' => $users,
             'enableyError' => $error,
             'enableyGroups' => $groups,

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Search } from 'lucide-react';
 import axios from 'axios';
-import BaseModal from '@/Components/ui/BaseModal';
+import BaseModal from '@/Components/UI/BaseModal';
 
 export default function ManagerGroupsModal({ isOpen, onClose, manager, groups, onSuccess }) {
     const [assignedGroups, setAssignedGroups] = useState([]);

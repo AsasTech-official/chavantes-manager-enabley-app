@@ -1,7 +1,7 @@
 import { usePage } from '@inertiajs/react';
 import { ToastContainer } from 'react-toastify';
-import { FlashToasts } from '@/Components/layout';
-import ForceChangePasswordModal from '@/Components/auth/ForceChangePasswordModal';
+import { FlashToasts } from '@/Components/Layout';
+import ForceChangePasswordModal from '@/Components/Auth/ForceChangePasswordModal';
 
 export default function MainLayout({ children }) {
     const { auth } = usePage().props;

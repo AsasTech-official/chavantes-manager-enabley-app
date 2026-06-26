@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { ChevronDown, ShieldCheck, Pencil, Trash2 } from 'lucide-react';
-import DataTableLayout, { PAGE_SIZE_ALL } from '@/Components/ui/DataTableLayout';
+import DataTableLayout, { PAGE_SIZE_ALL } from '@/Components/UI/DataTableLayout';
 
 const ACTIONS_MENU_MIN_PX = 176;
 

@@ -1,10 +1,10 @@
 import { useEffect } from 'react';
 import { router } from '@inertiajs/react';
 import { Eye, X } from 'lucide-react';
-import AnimatedContent from '@/Components/ui/AnimatedContent';
-import AnimatedDialogBackdrop from '@/Components/ui/AnimatedDialogBackdrop';
-import { DIALOG_MOTION } from '@/Components/ui/dialogMotion';
-import { GROUP_FOCUS_QUERY, labelEnableyRole } from './users-table/usersTableConfig';
+import AnimatedContent from '@/Components/UI/AnimatedContent';
+import AnimatedDialogBackdrop from '@/Components/UI/AnimatedDialogBackdrop';
+import { DIALOG_MOTION } from '@/Components/UI/dialogMotion';
+import { GROUP_FOCUS_QUERY, labelEnableyRole } from './UsersTable/usersTableConfig';
 
 /**
  * Lista grupos associados a um papel do utilizador; olho navega para `/home` com o grupo focado na árvore.

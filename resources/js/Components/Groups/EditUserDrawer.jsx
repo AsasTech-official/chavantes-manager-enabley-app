@@ -1,8 +1,8 @@
 import { useEffect, useMemo, useState } from 'react';
 import { ChevronDown, Search, X } from 'lucide-react';
-import AnimatedContent from '@/Components/ui/AnimatedContent';
-import AnimatedDialogBackdrop from '@/Components/ui/AnimatedDialogBackdrop';
-import { DIALOG_MOTION } from '@/Components/ui/dialogMotion';
+import AnimatedContent from '@/Components/UI/AnimatedContent';
+import AnimatedDialogBackdrop from '@/Components/UI/AnimatedDialogBackdrop';
+import { DIALOG_MOTION } from '@/Components/UI/dialogMotion';
 
 const sectionTitleClass =
     'mb-3 text-[11px] font-semibold uppercase tracking-[0.14em] text-[#04385D]/75';

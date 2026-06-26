@@ -1,5 +1,5 @@
 import { Head, useForm, usePage } from '@inertiajs/react';
-import { AppNav, AppPageLayout } from '@/Components/layout';
+import { AppNav, AppPageLayout } from '@/Components/Layout';
 
 /** Navegação completa: evita resposta binária ser tratada como visita Inertia e ignora conflitos do atributo `download` com Content-Disposition. */
 function startModelDownload(path) {

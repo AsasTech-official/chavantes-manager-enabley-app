@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { flushSync } from 'react-dom';
 import { Head, router, useForm, usePage } from '@inertiajs/react';
 import { Plus } from 'lucide-react';
-import { AppNav, AppPageLayout } from '@/Components/layout';
+import { AppNav, AppPageLayout } from '@/Components/Layout';
 import {
     buildRoleGroupsFormFromUser,
     CreateUserDrawer,
@@ -10,7 +10,7 @@ import {
     GroupUsersTable,
     USERS_BUSCA_QUERY,
     userRowToUpdatePayload,
-} from '@/Components/groups';
+} from '@/Components/Groups';
 
 /** Cópia nova em cada reset — evita partilha de referências em nested objects e alinha defaults do useForm após POST (Inertia atualiza defaults com os dados submetidos). */
 function createEmptyCreateUserFormData() {
@@ -178,7 +178,7 @@ export default function Users({
 
     return (
         <>
-            <Head title="Usuários" />
+            <Head title="Gerenciamento de Usuários" />
             <AppPageLayout>
                 <AppNav />
                 <main className="mx-auto flex w-full max-w-[min(1920px,calc(100vw-1.5rem))] flex-1 flex-col px-4 pb-10 pt-4 sm:px-6">
@@ -192,7 +192,7 @@ export default function Users({
                             <>
                                 <div className="flex flex-col gap-3 border-b-2 border-[#04385D] pb-3 sm:flex-row sm:items-center sm:justify-between sm:gap-4">
                                     <div>
-                                        <h2 className="text-base font-semibold text-[#1F3860]">Usuários</h2>
+                                        <h2 className="text-base font-semibold text-[#1F3860]">Gerenciamento de Usuários</h2>
                                         <p className="mt-1 text-sm text-slate-600">
                                             {enableyUsers.length === 0
                                                 ? 'Nenhum usuário na subconta.'

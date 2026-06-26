@@ -1,7 +1,7 @@
 import { useMemo } from 'react';
 import { Head, usePage } from '@inertiajs/react';
-import { AppNav, AppPageLayout } from '@/Components/layout';
-import { GROUP_FOCUS_QUERY, GroupsAndUsersPanel } from '@/Components/groups';
+import { AppNav, AppPageLayout } from '@/Components/Layout';
+import { GROUP_FOCUS_QUERY, GroupsAndUsersPanel } from '@/Components/Groups';
 
 /** Caminho de identifiers da raíz até ao grupo `targetId`, ou null. */
 function findGroupIdPath(nodes, targetId, path = []) {

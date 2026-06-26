@@ -1448,16 +1448,39 @@ class EnableyApiService
         return $out;
     }
 
-    /**
-     * @param  Response  $response
-     */
     private function throwForResponse(string $context, $response): never
     {
         $body = $response->body();
-        $message = "Enabley ({$context}): HTTP {$response->status()}";
-        if ($body !== '') {
-            $message .= ' — '.mb_substr($body, 0, 2000);
+        $message = "Erro na plataforma ({$context}): HTTP {$response->status()}";
+        
+        $decoded = json_decode($body, true);
+        $apiError = '';
+        if (is_array($decoded) && isset($decoded['message'])) {
+            $apiError = $decoded['message'];
+        } elseif (is_array($decoded) && isset($decoded['error'])) {
+            $apiError = is_string($decoded['error']) ? $decoded['error'] : json_encode($decoded['error']);
+        } elseif ($body !== '') {
+            $apiError = mb_substr($body, 0, 2000);
         }
+
+        // Tradução amigável de erros comuns da API (Enabley)
+        $friendlyError = $apiError;
+        if (stripos($apiError, 'already exists') !== false) {
+            $friendlyError = 'Já existe um cadastro com este identificador (CPF/E-mail ou Username).';
+        } elseif (stripos($apiError, 'invalid email') !== false) {
+            $friendlyError = 'O formato do e-mail é inválido.';
+        } elseif (stripos($apiError, 'not found') !== false) {
+            $friendlyError = 'Recurso não encontrado.';
+        } elseif (stripos($apiError, 'unauthorized') !== false || stripos($apiError, 'forbidden') !== false) {
+            $friendlyError = 'Acesso negado (Credenciais inválidas ou sem permissão).';
+        } elseif (stripos($apiError, 'password') !== false && stripos($apiError, 'weak') !== false) {
+            $friendlyError = 'A senha padrão configurada é muito fraca.';
+        }
+
+        if ($friendlyError !== '') {
+            $message = $friendlyError;
+        }
+
         throw new RuntimeException($message);
     }
 }

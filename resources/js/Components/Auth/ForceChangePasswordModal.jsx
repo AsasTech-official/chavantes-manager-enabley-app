@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useForm } from '@inertiajs/react';
-import BaseModal from '@/Components/ui/BaseModal';
+import BaseModal from '@/Components/UI/BaseModal';
 
 export default function ForceChangePasswordModal({ isOpen }) {
     const form = useForm({

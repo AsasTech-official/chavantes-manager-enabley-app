@@ -2,8 +2,8 @@ import { useState } from 'react';
 import axios from 'axios';
 import { Eye, EyeOff, Loader2 } from 'lucide-react';
 import { Head } from '@inertiajs/react';
-import AnimatedContent from '@/Components/ui/AnimatedContent';
-import { DIALOG_MOTION } from '@/Components/ui/dialogMotion';
+import AnimatedContent from '@/Components/UI/AnimatedContent';
+import { DIALOG_MOTION } from '@/Components/UI/dialogMotion';
 
 function LoginFullScreenSpinner() {
     return (

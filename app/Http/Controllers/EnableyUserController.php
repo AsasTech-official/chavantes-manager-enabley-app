@@ -53,7 +53,7 @@ class EnableyUserController extends Controller
         $scope = EnableyScopeContext::current();
         $settings = IntegrationSetting::current();
         if (! $settings->hasDefaultUserPassword()) {
-            return redirect()->route('usuarios')->with(
+            return redirect()->route('users.index')->with(
                 'error',
                 'Defina a senha padrão no Centro de configuração antes de criar usuários na Enabley.',
             );
@@ -124,10 +124,10 @@ class EnableyUserController extends Controller
                 }
             }
         } catch (Throwable $e) {
-            return redirect()->route('usuarios')->with('error', $e->getMessage());
+            return redirect()->route('users.index')->with('error', $e->getMessage());
         }
 
-        return redirect()->route('usuarios')->with('success', 'Usuário criado.');
+        return redirect()->route('users.index')->with('success', 'Usuário criado.');
     }
 
     public function update(Request $request, string $identifier): RedirectResponse
@@ -142,7 +142,7 @@ class EnableyUserController extends Controller
         try {
             $this->scopeService->assertUserInScope($identifier, $scope);
         } catch (RuntimeException $e) {
-            return redirect()->route('usuarios')->with('error', $e->getMessage());
+            return redirect()->route('users.index')->with('error', $e->getMessage());
         }
 
         $rawEmail = $request->input('email');
@@ -197,7 +197,7 @@ class EnableyUserController extends Controller
                 $this->syncUserLearnerGroupsOnly($identifier, $roles, $learnerGroupsToApply);
             }
         } catch (Throwable $e) {
-            return redirect()->route('usuarios')->with('error', $e->getMessage());
+            return redirect()->route('users.index')->with('error', $e->getMessage());
         }
 
         $message = match (true) {
@@ -206,7 +206,7 @@ class EnableyUserController extends Controller
             default => 'Usuário atualizado.',
         };
 
-        return redirect()->route('usuarios')->with('success', $message);
+        return redirect()->route('users.index')->with('success', $message);
     }
 
     /**

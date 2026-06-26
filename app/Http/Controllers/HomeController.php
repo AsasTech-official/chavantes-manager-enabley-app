@@ -36,7 +36,7 @@ class HomeController extends Controller
             $enableyGroupTypes = [];
         }
 
-        return Inertia::render('Home', [
+        return Inertia::render('Home/Index', [
             'enableyTree' => $enableyTree,
             'enableyError' => $error,
             'enableyGroupTypes' => $enableyGroupTypes,

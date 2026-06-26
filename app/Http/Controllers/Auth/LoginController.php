@@ -73,7 +73,7 @@ class LoginController extends Controller
 
         if ($request->expectsJson()) {
             $user = $result['user'];
-            $defaultRoute = $user->role === 'admin' ? route('gerentes.index') : route('home');
+            $defaultRoute = $user->role === 'admin' ? route('managers.index') : route('home');
             $redirect = $request->session()->pull('url.intended', $defaultRoute);
 
             return response()->json([
@@ -83,7 +83,7 @@ class LoginController extends Controller
         }
 
         $user = $result['user'] ?? Auth::user();
-        $defaultRoute = $user && $user->role === 'admin' ? route('gerentes.index') : route('home');
+        $defaultRoute = $user && $user->role === 'admin' ? route('managers.index') : route('home');
         return redirect()->intended($defaultRoute);
     }
 

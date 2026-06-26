@@ -33,7 +33,7 @@ class EnableyImportController extends Controller
 
     public function index(): Response
     {
-        return Inertia::render('Import');
+        return Inertia::render('Import/Index');
     }
 
     public function downloadTemplate(string $kind): BinaryFileResponse
@@ -82,7 +82,7 @@ class EnableyImportController extends Controller
     {
         $settings = IntegrationSetting::current();
         if (! $settings->hasDefaultUserPassword()) {
-            return redirect()->route('importacao')->with(
+            return redirect()->route('import.index')->with(
                 'error',
                 'Defina a senha padrão no Centro de configuração antes de importar usuários.',
             );
@@ -97,12 +97,12 @@ class EnableyImportController extends Controller
         try {
             $rows = $this->readKeyedImportRows($file, fn (string $h) => $this->normalizeUserHeaderKey($h));
         } catch (Throwable $e) {
-            return redirect()->route('importacao')->with('error', $e->getMessage());
+            return redirect()->route('import.index')->with('error', $e->getMessage());
         }
 
         if (! isset($rows['has_first'], $rows['has_last'], $rows['has_username'])
             || ! $rows['has_first'] || ! $rows['has_last'] || ! $rows['has_username']) {
-            return redirect()->route('importacao')->with(
+            return redirect()->route('import.index')->with(
                 'error',
                 'O ficheiro deve incluir as colunas first_name, last_name e username (cabeçalho na linha 1, nomes exactos).',
             );
@@ -110,10 +110,10 @@ class EnableyImportController extends Controller
 
         $dataRows = $rows['rows'];
         if (count($dataRows) === 0) {
-            return redirect()->route('importacao')->with('error', 'O ficheiro não tem linhas de dados.');
+            return redirect()->route('import.index')->with('error', 'O ficheiro não tem linhas de dados.');
         }
         if (count($dataRows) > self::MAX_DATA_ROWS) {
-            return redirect()->route('importacao')->with('error', 'Máximo de '.self::MAX_DATA_ROWS.' linhas por ficheiro.');
+            return redirect()->route('import.index')->with('error', 'Máximo de '.self::MAX_DATA_ROWS.' linhas por ficheiro.');
         }
 
         $scope = EnableyScopeContext::current();
@@ -121,7 +121,7 @@ class EnableyImportController extends Controller
         try {
             $flat = $this->scopeService->filterFlatGroups($this->enabley->listFlatGroups(), $scope);
         } catch (Throwable $e) {
-            return redirect()->route('importacao')->with('error', $e->getMessage());
+            return redirect()->route('import.index')->with('error', $e->getMessage());
         }
         $validGroupIds = [];
         $validGroupNames = [];
@@ -212,7 +212,7 @@ class EnableyImportController extends Controller
             ? "Usuários: {$ok} criados."
             : "Usuários: {$ok} criados, {$fail} falharam (ver detalhes abaixo).";
 
-        return redirect()->route('importacao')
+        return redirect()->route('import.index')
             ->with('success', $summary)
             ->with('import_users', ['ok' => $ok, 'failed' => $fail, 'rows' => $details]);
     }

@@ -1,8 +1,8 @@
 import { useCallback, useEffect, useId, useMemo, useState } from 'react';
 import { router } from '@inertiajs/react';
 import { Eye, MoreHorizontal } from 'lucide-react';
-import RoleGroupsModal from '@/Components/groups/RoleGroupsModal';
-import DataTableLayout, { PAGE_SIZE_ALL } from '@/Components/ui/DataTableLayout';
+import RoleGroupsModal from '@/Components/Groups/RoleGroupsModal';
+import DataTableLayout, { PAGE_SIZE_ALL } from '@/Components/UI/DataTableLayout';
 import {
     PAGE_SIZES,
     USERS_BUSCA_QUERY,

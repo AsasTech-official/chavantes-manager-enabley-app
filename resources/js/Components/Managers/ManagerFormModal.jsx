@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import { useForm } from '@inertiajs/react';
-import BaseModal from '@/Components/ui/BaseModal';
+import BaseModal from '@/Components/UI/BaseModal';
 
 export default function ManagerFormModal({ isOpen, onClose, manager }) {
     const form = useForm({

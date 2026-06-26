@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { Head } from '@inertiajs/react';
-import { AppNav, AppPageLayout } from '@/Components/layout';
+import { AppNav, AppPageLayout } from '@/Components/Layout';
 import { Plus } from 'lucide-react';
-import ManagerFormModal from '@/Components/managers/ManagerFormModal';
-import ManagerGroupsModal from '@/Components/managers/ManagerGroupsModal';
-import ManagerDeleteModal from '@/Components/managers/ManagerDeleteModal';
-import ManagersTable from '@/Components/managers/ManagersTable';
+import ManagerFormModal from '@/Components/Managers/ManagerFormModal';
+import ManagerGroupsModal from '@/Components/Managers/ManagerGroupsModal';
+import ManagerDeleteModal from '@/Components/Managers/ManagerDeleteModal';
+import ManagersTable from '@/Components/Managers/ManagersTable';
 
 export default function ManagersIndex({ auth, managers: initialManagers, groups, hasDefaultUserPassword }) {
     const [managers, setManagers] = useState(initialManagers || []);

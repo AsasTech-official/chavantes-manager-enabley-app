@@ -71,7 +71,7 @@ class ManagerController extends Controller
     {
         $settings = \App\Models\IntegrationSetting::current();
         if (! $settings->hasDefaultUserPassword()) {
-            return redirect()->route('gerentes.index')->with(
+            return redirect()->route('managers.index')->with(
                 'error',
                 'Defina a senha padrão no Centro de configuração antes de criar gerentes.',
             );

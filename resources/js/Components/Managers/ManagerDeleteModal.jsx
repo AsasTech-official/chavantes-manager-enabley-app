@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import BaseModal from '@/Components/ui/BaseModal';
+import BaseModal from '@/Components/UI/BaseModal';
 import axios from 'axios';
 import { AlertTriangle } from 'lucide-react';
 

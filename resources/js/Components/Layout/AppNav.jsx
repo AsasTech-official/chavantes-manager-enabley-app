@@ -2,7 +2,7 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import axios from 'axios';
 import { Link, usePage } from '@inertiajs/react';
 import { ChevronDown, LogOut, Menu, Settings, X } from 'lucide-react';
-import ConfigurationModal from '@/Components/subaccount/ConfigurationModal';
+import ConfigurationModal from '@/Components/Subaccount/ConfigurationModal';
 
 function navTabClass(active) {
     return [

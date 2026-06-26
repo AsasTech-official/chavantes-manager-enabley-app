@@ -2,9 +2,9 @@ import { useEffect, useState } from 'react';
 import axios from 'axios';
 import { router, useForm } from '@inertiajs/react';
 import { X } from 'lucide-react';
-import AnimatedContent from '@/Components/ui/AnimatedContent';
-import AnimatedDialogBackdrop from '@/Components/ui/AnimatedDialogBackdrop';
-import { DIALOG_MOTION } from '@/Components/ui/dialogMotion';
+import AnimatedContent from '@/Components/UI/AnimatedContent';
+import AnimatedDialogBackdrop from '@/Components/UI/AnimatedDialogBackdrop';
+import { DIALOG_MOTION } from '@/Components/UI/dialogMotion';
 
 /**
  * Modal de configuração — senha padrão para novos usuários.

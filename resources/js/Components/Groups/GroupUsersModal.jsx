@@ -1,9 +1,9 @@
 import { useEffect, useState } from 'react';
 import { X } from 'lucide-react';
-import AnimatedContent from '@/Components/ui/AnimatedContent';
-import AnimatedDialogBackdrop from '@/Components/ui/AnimatedDialogBackdrop';
-import { DIALOG_MOTION } from '@/Components/ui/dialogMotion';
-import GroupUsersTable from './users-table';
+import AnimatedContent from '@/Components/UI/AnimatedContent';
+import AnimatedDialogBackdrop from '@/Components/UI/AnimatedDialogBackdrop';
+import { DIALOG_MOTION } from '@/Components/UI/dialogMotion';
+import GroupUsersTable from './UsersTable';
 
 export default function GroupUsersModal({ open, onClose, groupName, groupIdentifier, users }) {
     const list = Array.isArray(users) ? users : [];
