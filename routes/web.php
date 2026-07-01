@@ -6,6 +6,7 @@ use App\Http\Controllers\EnableyImportController;
 use App\Http\Controllers\EnableyUserController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\ManagerController;
+use App\Http\Controllers\SystemUserController;
 use App\Http\Controllers\PasswordChangeController;
 use App\Http\Controllers\UsersController;
 use App\Http\Middleware\EnsureFullAccessAdmin;
@@ -53,5 +54,10 @@ Route::middleware('auth')->group(function () {
         Route::put('/gerentes/{manager}', [ManagerController::class, 'update'])->name('managers.update');
         Route::delete('/gerentes/{manager}', [ManagerController::class, 'destroy'])->name('managers.destroy');
         Route::post('/gerentes/{manager}/groups', [ManagerController::class, 'updateGroups'])->name('managers.groups.update');
+
+        Route::get('/usuarios-sistema', [SystemUserController::class, 'index'])->name('system-users.index');
+        Route::post('/usuarios-sistema', [SystemUserController::class, 'store'])->name('system-users.store');
+        Route::put('/usuarios-sistema/{systemUser}', [SystemUserController::class, 'update'])->name('system-users.update');
+        Route::delete('/usuarios-sistema/{systemUser}', [SystemUserController::class, 'destroy'])->name('system-users.destroy');
     });
 });

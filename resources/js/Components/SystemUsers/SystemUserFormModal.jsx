@@ -2,7 +2,7 @@ import React, { useEffect } from 'react';
 import { useForm } from '@inertiajs/react';
 import BaseModal from '@/Components/UI/BaseModal';
 
-export default function ManagerFormModal({ isOpen, onClose, manager }) {
+export default function SystemUserFormModal({ isOpen, onClose, systemUser }) {
     const form = useForm({
         name: '',
         username: '',
@@ -12,10 +12,10 @@ export default function ManagerFormModal({ isOpen, onClose, manager }) {
     useEffect(() => {
         if (isOpen) {
             form.clearErrors();
-            if (manager) {
+            if (systemUser) {
                 form.setData({
-                    name: manager.name,
-                    username: manager.username,
+                    name: systemUser.name,
+                    username: systemUser.username,
                     password: '',
                 });
             } else {
@@ -26,17 +26,17 @@ export default function ManagerFormModal({ isOpen, onClose, manager }) {
                 });
             }
         }
-    }, [isOpen, manager]);
+    }, [isOpen, systemUser]);
 
-    const handleSaveManager = (e) => {
+    const handleSave = (e) => {
         e.preventDefault();
         
-        if (manager) {
-            form.put(`/gerentes/${manager.id}`, {
+        if (systemUser) {
+            form.put(`/usuarios-sistema/${systemUser.id}`, {
                 onSuccess: () => onClose()
             });
         } else {
-            form.post('/gerentes', {
+            form.post('/usuarios-sistema', {
                 onSuccess: () => onClose()
             });
         }
@@ -53,7 +53,7 @@ export default function ManagerFormModal({ isOpen, onClose, manager }) {
             </button>
             <button
                 type="button"
-                onClick={handleSaveManager}
+                onClick={handleSave}
                 disabled={form.processing}
                 className="rounded-md bg-[#3757A1] px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-[#2a437e] disabled:opacity-50 cursor-pointer"
             >
@@ -66,10 +66,10 @@ export default function ManagerFormModal({ isOpen, onClose, manager }) {
         <BaseModal
             isOpen={isOpen}
             onClose={onClose}
-            title={manager ? 'Editar Gerente' : 'Novo Gerente'}
+            title={systemUser ? 'Editar Usuário do Sistema' : 'Novo Usuário do Sistema'}
             footer={footer}
         >
-            <form id="manager-form" onSubmit={handleSaveManager} className="space-y-4">
+            <form id="system-user-form" onSubmit={handleSave} className="space-y-4">
                 <div>
                     <label className="block text-sm font-semibold text-slate-700">Nome Completo</label>
                     <input
@@ -93,7 +93,7 @@ export default function ManagerFormModal({ isOpen, onClose, manager }) {
                     />
                     {form.errors.username && <p className="mt-1 text-xs text-red-600">{form.errors.username}</p>}
                 </div>
-                {manager && (
+                {systemUser && (
                     <div>
                         <label className="block text-sm font-semibold text-slate-700">
                             Senha <span className="text-slate-400 font-normal">(Deixe em branco para não alterar)</span>

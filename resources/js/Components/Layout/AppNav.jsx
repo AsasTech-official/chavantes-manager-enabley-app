@@ -97,6 +97,7 @@ export default function AppNav() {
     const isGrupos = path === '/home';
     const isUsuarios = path === '/usuarios';
     const isImportacao = path === '/importacao';
+    const isUsuariosSistema = path === '/usuarios-sistema';
 
     return (
         <>
@@ -132,6 +133,11 @@ export default function AppNav() {
                             {showAdminNav ? (
                                 <Link href="/gerentes" className={navTabClass(path === '/gerentes')}>
                                     Gerentes
+                                </Link>
+                            ) : null}
+                            {showAdminNav ? (
+                                <Link href="/usuarios-sistema" className={navTabClass(isUsuariosSistema)}>
+                                    Usuários Sistema
                                 </Link>
                             ) : null}
                         </nav>
@@ -286,6 +292,17 @@ export default function AppNav() {
                                     }`}
                                 >
                                     Gerentes
+                                </Link>
+                            ) : null}
+                            {showAdminNav ? (
+                                <Link
+                                    href="/usuarios-sistema"
+                                    onClick={closeMenu}
+                                    className={`cursor-pointer rounded-lg px-3 py-3.5 text-lg font-semibold transition hover:bg-black/[0.04] hover:text-[#EF6F6C] ${
+                                        isUsuariosSistema ? 'bg-black/[0.06] text-[#EF6F6C]' : 'text-[#3757A1]'
+                                    }`}
+                                >
+                                    Usuários Sistema
                                 </Link>
                             ) : null}
                             {activeSubAccount ? (

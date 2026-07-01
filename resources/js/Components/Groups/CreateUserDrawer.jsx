@@ -193,7 +193,8 @@ export default function CreateUserDrawer({
                                                 id="new-user-username"
                                                 type="text"
                                                 value={form.data.username}
-                                                onChange={(e) => form.setData('username', e.target.value)}
+                                                onChange={(e) => form.setData('username', e.target.value.slice(0, 11))}
+                                                maxLength={11}
                                                 className={inputClass}
                                                 autoComplete="username"
                                                 required
